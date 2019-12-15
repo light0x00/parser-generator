@@ -1,0 +1,17 @@
+{
+	"name": "@light0x00/parser-generator",
+	"version": "0.0.2",
+	"main": "index.js",
+	"license": "MIT",
+	"scripts": {
+		"clean":"rimraf rm lib dist coverage .nyc_output",
+
+		"babel": "babel --extensions \".ts\" --copy-files --root-mode upward",
+		"prebuild": "rimraf rm lib",
+		"build": "tsc --emitDeclarationOnly --rootDir src --outDir lib -p tsconfig.prod.json && yarn run babel src --out-dir lib",
+
+		"pretest": "rimraf rm dist && yarn run babel src --out-dir dist/src && yarn run babel test --out-dir dist/test",
+		"test": "nyc --cache false mocha --file dist/test/*.js",
+		"posttest": "nyc report --reporter=json"
+	}
+}

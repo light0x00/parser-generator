@@ -1,0 +1,14 @@
+{
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"files.associations": {
+		"eslint.json": "jsonc"
+	},
+	"eslint.validate": [
+		"javascript",
+		"typescript",
+	],
+	"files.exclude": {
+		"**/lib":false,
+		"**/dist":false
+	}
+}

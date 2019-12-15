@@ -1,0 +1,42 @@
+{
+	"env": {},
+	"presets": [
+		[
+			"@babel/env",
+			{
+				"targets": {
+					"node": "8.12.0"
+				},
+				"spec": false,
+				"modules": "commonjs",
+				"debug": false
+			}
+		],
+		[
+			"@babel/preset-typescript",
+			{
+				"isTSX": false
+			}
+		]
+	],
+	"plugins": [
+		"@babel/plugin-proposal-numeric-separator",
+		"@babel/proposal-class-properties",
+		"@babel/proposal-object-rest-spread",
+		"@babel/plugin-proposal-optional-chaining",
+		"@babel/plugin-transform-named-capturing-groups-regex",
+		[
+			"module-resolver",
+			{
+				"root": [
+					"./"
+				],
+				"alias": {
+					"@": "./src",
+					"test": "./test"
+				}
+			}
+		]
+	],
+	"sourceMaps": "inline"
+}

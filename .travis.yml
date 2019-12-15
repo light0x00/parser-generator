@@ -1,0 +1,20 @@
+os:
+- linux
+- osx
+language: node_js
+node_js:
+- '8'
+before_install: yarn
+install: yarn run build
+scripts:
+- yarn run test
+- yarn run codecov -t $CODECOV_TOKEN
+notifications:
+  email:
+    recipients:
+    - light0x00@163.com
+    on_success: change
+	on_failure: always
+env:
+  global:
+    secure: YdwrWWEVwiKTqhlmDBfUvq5hw8ntqGRPFto0NndDCzpVJ864aIqevOsce5LtzI+kFeHH6Nu78jbQaqRdB/2yvXECGI0Jpt9JZtgZnlructSRAHgVHHUFFsF3XgQSbZQ6HiQhGn/15baAayEftYWED4RaWh5ChMNzSJg3d5rSfPLDkEIkTttuVlaS5ZVZI1Nu3FYmbrnBbVs8fI70p8MLPHWpDpMzi5qPmyf0Wg5xUpA6WERDboKsLjumS0/aG9ZVQZYyNRF7MJgZeZTzlM21Jxm6Bi5x8OjBshTXGOy0rJyqMeITOlCko1UPUZ4Jin097u1zcNt4s6fN7UbotXKYO7CtoDXck+DsLRYRJ02pKB57I/f+sVb4ZgJaqOvCB0CKXRfPbWaDTqTr+VBLgb+0htmU3vUxXiGCHaAOoO8sZilIb64CIJVjP27NOoJEo07wG7PaQb0Ly7j+okOUF/82DVSrS5j2kjoP1zmO+0GU8LkxSdEbHajx/vFq3oIuSNH0w8oAJ6ytsU5YBvbKU9B9gtjnAngPOoKAg2UoBPmQvX94Yb3wFDEbhDclJ3pdeHYsg8E8/8W1kkcAe0MiTZwo1Tx0qjG1RiHI5lh2aoVnK7ZOkl9FhNXKvym2bX2LKYZnNFByqkjD5tGADVa20qTPLmR6JIswDZCWT2dJHZOzrmc=

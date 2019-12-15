@@ -1,0 +1,13 @@
+{
+	"name": "@light0x00/parser-definition",
+	"version": "0.0.2",
+	"main": "index.js",
+	"license": "MIT",
+	"scripts": {
+		"test": "echo '1111'"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {}
+}

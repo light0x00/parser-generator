@@ -1,0 +1,3 @@
+- [ ] 将用户输入类型 与 分析表(包括First、Follow、LookSet、LRParsingTable) 分开
+- [ ] 处理table key问题, 避免使用instanceof
+- [ ] ActionGrammar 输入数据结构支持 将action指定在终结符上 作为其产生式的缺省配置.

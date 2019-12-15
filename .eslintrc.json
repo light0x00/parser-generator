@@ -1,0 +1,66 @@
+{
+	"root": true,
+	"parser": "@typescript-eslint/parser",
+
+	"env": {
+		"es6": true,
+		"node": true,
+		"mocha": true
+	},
+	"extends": [
+		"eslint:recommended"
+	],
+	"plugins": [
+		"@typescript-eslint"
+	],
+	"parserOptions": {
+		"ecmaVersion": 2018,
+		"sourceType": "module"
+	},
+	"rules": {
+		"indent": [
+			"error",
+			"tab",
+			{
+				"SwitchCase": 1
+			}
+		],
+		"linebreak-style": [
+			"error",
+			"unix"
+		],
+		"quotes": [
+			"warn",
+			"double",
+			{
+				"allowTemplateLiterals": true
+			}
+		],
+		"semi": [
+			"warn",
+			"always"
+		],
+		"no-console": "off",
+		"no-multiple-empty-lines": [
+			"error",
+			{
+				"max": 2,
+				"maxEOF": 1
+			}
+		],
+		/* typescript误报 */
+		"@typescript-eslint/no-unused-vars": [
+			2,
+			{
+				"args": "none"
+			}
+		],
+		/* Allows the loop condition to be constant */
+		"no-constant-condition": [
+			"error",
+			{
+				"checkLoops": false
+			}
+		]
+	}
+}
