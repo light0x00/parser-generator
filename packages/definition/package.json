@@ -1,13 +1,21 @@
 {
 	"name": "@light0x00/parser-definition",
 	"version": "0.0.2",
-	"main": "index.js",
+	"main": "lib/index.js",
+	"files": [
+		"lib"
+	],
 	"license": "MIT",
 	"scripts": {
-		"test": "echo '1111'"
+		"test": "echo '1111'",
+		"babel": "babel --extensions \".ts\" --copy-files --root-mode upward",
+		"prebuild": "rimraf rm lib",
+		"build": "tsc --emitDeclarationOnly --rootDir src --outDir lib -p tsconfig.json && yarn run babel src --out-dir lib"
 	},
 	"publishConfig": {
 		"access": "public"
 	},
-	"dependencies": {}
+	"dependencies": {
+		"@light0x00/shim": "^0.0.2"
+	}
 }
