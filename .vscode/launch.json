@@ -20,8 +20,8 @@
 				"tsconfig-paths/register"
 			],
 			"env": {
-				"DEBUG": "pg:*",
-				"TS_NODE_PROJECT": "${input:pickTsConfig}"
+				"DEBUG": "PG:*",
+				"TS_NODE_PROJECT": "packages/core/tsconfig.json"
 			},
 			"console": "integratedTerminal",
 			"protocol": "inspector",
@@ -34,8 +34,7 @@
 			"id": "pickTsConfig",
 			"description": "Where is the tsconfig?",
 			"options": [
-				"packages/parser/tsconfig.json",
-				"packages/parser-generator/tsconfig.json",
+				"packages/core/tsconfig.json",
 			],
 			"default": "packages/parser"
 		}

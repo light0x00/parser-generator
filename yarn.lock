@@ -1709,6 +1709,11 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
+"@light0x00/shim@^0.0.2":
+  version "0.0.2"
+  resolved "https://registry.npmjs.org/@light0x00/shim/-/shim-0.0.2.tgz#7c1404864ea37b6513f20705ee209c255e8f003b"
+  integrity sha512-WKdweb0reOHRWXjuYcloYM7hTFIAvsN3QofTOZRTexJSghndaihjENkOR04WUD6NGdLURJxPpWwP2xH/maBc7g==
+
 "@marionebl/sander@^0.6.0":
   version "0.6.1"
   resolved "https://registry.npmjs.org/@marionebl/sander/-/sander-0.6.1.tgz#1958965874f24bc51be48875feb50d642fc41f7b"
@@ -1821,6 +1826,11 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@types/debug@^4.1.5":
+  version "4.1.5"
+  resolved "https://registry.npmjs.org/@types/debug/-/debug-4.1.5.tgz#b14efa8852b7768d898906613c23f688713e02cd"
+  integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
+
 "@types/eslint-visitor-keys@^1.0.0":
   version "1.0.0"
   resolved "https://registry.npmjs.org/@types/eslint-visitor-keys/-/eslint-visitor-keys-1.0.0.tgz#1ee30d79544ca84d68d4b3cdb0af4f205663dd2d"
@@ -1849,6 +1859,11 @@
   version "0.0.29"
   resolved "https://registry.npmjs.org/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
+
+"@types/lodash@^4.14.149":
+  version "4.14.149"
+  resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.149.tgz#1342d63d948c6062838fbf961012f74d4e638440"
+  integrity sha512-ijGqzZt/b7BfzcK9vTrS6MFljQRPn5BFWOx8oE0GYxribu6uV+aA9zZuXI1zc/etK9E8nrgdoF2+LgUw7+9tJQ==
 
 "@types/minimatch@*":
   version "3.0.3"
