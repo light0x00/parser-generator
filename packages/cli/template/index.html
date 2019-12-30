@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<style>
+	body {
+		font-size: 16px;
+	}
+
+	table,
+	td {
+		border: 1px solid #DCDFE6;
+		border-collapse: collapse;
+		border-spacing: 0px;
+	}
+
+	table td {
+		min-width: 50px;
+		padding: 5px 10px
+	}
+
+	#mynetwork {
+		width: 100%;
+		height: 2000px;
+		border: 1px solid lightgray;
+	}
+</style>
+
+<body>
+	<h1>Productions</h1>
+	<table>
+		<tr>
+			<td>id</td>
+			<td>body</td>
+			<td>action</td>
+		</tr>
+		<% for (let prod of prods){ %>
+		<tr>
+			<td> <%- prod.id %> </td>
+			<td> <%- prod.head + '->' + prod.body.join(' ') %> </td>
+			<td> <%- prod.action %> </td>
+		</tr>
+		<% } %>
+	</table>
+	<!-- First 集 -->
+	<% if(first!=undefined){ %>
+	<h1>First Set</h1>
+	<table>
+		<% for (var i=0; i<first.length; i++){ %>
+		<tr>
+			<% for (var j=0; j<first[i].length; j++){ %>
+			<td> <%- first[i][j] %> </td>
+			<% }; %>
+		</tr>
+		<% }; %>
+	</table>
+	<% } %>
+	<!-- Follow 集 -->
+	<% if(follow!=undefined){ %>
+	<h1>Follow Set</h1>
+	<table>
+		<% for (var i=0; i< follow.length; i++){ %>
+		<tr>
+			<% for (var j=0; j< follow[i].length; j++){ %>
+			<td> <%- follow[i][j] %> </td>
+			<% }; %>
+		</tr>
+		<% }; %>
+	</table>
+	<% } %>
+	<!-- LR 分析表 -->
+	<% if(lrTable!=undefined){ %>
+	<h1>LR Parsing Table</h1>
+	<table>
+		<% for (var i=0; i< lrTable.length; i++){ %>
+		<tr>
+			<% for (var j=0; j< lrTable[i].length; j++){ %>
+			<td> <%- lrTable[i][j] %> </td>
+			<% }; %>
+		</tr>
+		<% }; %>
+	</table>
+	<% } %>
+	<!-- LR 自动机 -->
+	<% if(lrAutomata!=undefined){ %>
+	<div id="mynetwork"></div>
+	<script id="automataJson" type="application/json">
+		<%= lrAutomata %>
+	   </script>
+	<% } %>
+</body>
+
+</html>
