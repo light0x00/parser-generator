@@ -1,25 +1,50 @@
 {
-	"name": "@light0x00/parser-generator",
-	"version": "0.0.2",
-	"main": "index.js",
-	"license": "MIT",
+	"name": "@parser-generator/core",
+	"version": "0.0.0",
 	"scripts": {
-		"clean": "rimraf rm lib dist coverage .nyc_output",
+		"clean": "rimraf rm lib dist",
 		"babel": "babel --extensions \".ts\" --copy-files --root-mode upward",
-		"prebuild": "rimraf rm lib",
-		"build": "tsc --emitDeclarationOnly --rootDir src --outDir lib -p tsconfig.prod.json && yarn run babel src --out-dir lib",
+
+		"prebuild": "tsc -b --clean",
+		"build": "tsc --emitDeclarationOnly -p tsconfig.prod.json && yarn run babel src --out-dir lib",
+
 		"pretest": "rimraf rm dist && yarn run babel src --out-dir dist/src && yarn run babel test --out-dir dist/test",
-		"test": "nyc --cache false mocha --file dist/test/*.js",
+		"test": "nyc --cache false mocha dist/test/**/*.test.js",
 		"posttest": "nyc report --reporter=json"
 	},
 	"dependencies": {
-		"@light0x00/parser-definition": "^0.0.2",
 		"@light0x00/shim": "^0.0.2",
+		"@parser-generator/definition": "0.0.0",
 		"@types/debug": "^4.1.5",
 		"debug": "^4.1.1",
 		"lodash": "^4.17.15"
 	},
 	"devDependencies": {
 		"@types/lodash": "^4.14.149"
+	},
+	"main": "lib/index.js",
+	"files": [
+		"lib"
+	],
+	"contributors": [
+		"Chen Yang <light0x00@163.com> (https://github.com/light0x00)"
+	],
+	"description": "A Parser Generator that supports LL,SLR,LR1,LALR",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/light0x00/parser-generator.git"
+	},
+	"homepage": "https://github.com/light0x00/parser-generator",
+	"keywords": [
+		"Parser",
+		"LL",
+		"LR",
+		"SLR",
+		"LR1",
+		"LALR"
+	],
+	"publishConfig": {
+		"access": "public"
 	}
 }

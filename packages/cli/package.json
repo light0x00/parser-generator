@@ -1,14 +1,30 @@
 {
-	"name": "@parser-generator/definition",
+	"name": "@parser-generator/cli",
 	"version": "0.0.0",
 	"scripts": {
-		"test": "echo 'skip test'",
-		"babel": "babel --extensions \".ts\" --copy-files --root-mode upward",
-		"prebuild": "rimraf rm lib",
-		"build": "tsc --emitDeclarationOnly --rootDir src --outDir lib -p tsconfig.json && yarn run babel src --out-dir lib"
+		"test": "echo 'skip test'"
+	},
+	"devDependencies": {
+		"@types/getopts": "^2.1.0",
+		"@types/html-webpack-plugin": "^3.2.1",
+		"@types/shelljs": "^0.8.6",
+		"@types/webpack": "^4.41.0",
+		"shelljs": "^0.8.3",
+		"vis-network": "^6.5.0",
+		"webpack": "^4.41.5",
+		"webpack-cli": "^3.3.10"
 	},
 	"dependencies": {
-		"@light0x00/shim": "^0.0.2"
+		"@light0x00/shim": "^0.0.2",
+		"@parser-generator/core": "0.0.0",
+		"getopts": "^2.2.5",
+		"html-webpack-plugin": "^3.2.0",
+		"lodash-es": "^4.17.15",
+		"vis-network": "^6.5.0",
+		"webpack": "^4.41.5"
+	},
+	"bin": {
+		"pgen": "lib/index.js"
 	},
 	"main": "lib/index.js",
 	"files": [

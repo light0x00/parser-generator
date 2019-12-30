@@ -3,7 +3,7 @@
 	"private": true,
 	"scripts": {
 		"test": "lerna exec -- yarn run test",
-		"build": "lerna run --stream --sort build",
+		"build": "tsc -b --clean && lerna run --stream --sort build",
 		"codecov": "codecov -f packages/*/coverage/*.json",
 		"version": "lerna version --conventional-commits"
 	},

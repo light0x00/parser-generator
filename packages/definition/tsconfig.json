@@ -1,14 +1,9 @@
 {
 	"extends": "../../tsconfig",
 	"compilerOptions": {
-		"baseUrl": ".",
-		"paths": {
-			"@/*": [
-				"src/*"
-			],
-			"test/*": [
-				"test/*"
-			]
-		}
-	}
+		"baseUrl": "./",
+		"rootDir": "src",
+		"outDir": "lib"
+	},
+	"include": ["src"]
 }

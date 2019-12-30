@@ -4,3 +4,4 @@ dist/
 lib/
 coverage/
 .nyc_output/
+tsconfig.tsbuildinfo

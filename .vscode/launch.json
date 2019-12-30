@@ -26,6 +26,26 @@
 			"console": "integratedTerminal",
 			"protocol": "inspector",
 		},
+		{
+			"type": "node",
+			"request": "launch",
+			"name": "DEBUG-CORE",
+			"program": "${workspaceFolder}/node_modules/.bin/ts-node",
+			"args": [
+				"${file}",
+				"--no-timeouts"
+			],
+			"runtimeArgs": [
+				"-r",
+				"tsconfig-paths/register"
+			],
+			"env": {
+				"DEBUG": "PG:*",
+				"TS_NODE_PROJECT": "packages/core/tsconfig.json"
+			},
+			"console": "integratedTerminal",
+			"protocol": "inspector",
+		},
 	],
 	//https://code.visualstudio.com/docs/editor/variables-reference#_input-variables
 	"inputs": [
