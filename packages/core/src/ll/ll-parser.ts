@@ -7,13 +7,12 @@ LL分析是自顶向下的,这意味者其构造AST节点的顺序也是自顶�
 
 import {
 	EOF, NIL, ASTree, ILexer,
-	NonTerminal, SSymbol, isNonTerminal, ASTElement, IToken
-} from "./definition";
+	NonTerminal, SSymbol, isNonTerminal, ASTElement, IToken,PostAction
+} from "@parser-generator/definition";
 import { Stack, assert } from "@light0x00/shim";
 import rootDebug from "debug";
-import { FirstTable, FollowTable } from "./first-follow";
-import { PostAction } from "./definition/syntax";
-import { MismatchError } from "./utils";
+import { FirstTable, FollowTable } from "../first-follow";
+import { MismatchError } from "../utils";
 let debug = rootDebug("PG:LLParser");
 
 /**
@@ -93,6 +92,7 @@ export class LLParser {
 			let lookaheadKey = lookahead.key();
 			//非终结符
 			if (isNonTerminal(symbol)) {
+
 				let firstSet = this.firstTable.get(symbol)!;
 				let followSet = this.followTable.get(symbol)!;
 
@@ -102,7 +102,6 @@ export class LLParser {
 					//将候选式符号倒序压入栈
 					for (let i = candidate_prod.body.length - 1; i >= 0; i--)
 						symStack.push(candidate_prod.body[i]);
-
 					astAcc.add(candidate_prod.postAction!, candidate_prod.body.length);
 				}
 				//否则

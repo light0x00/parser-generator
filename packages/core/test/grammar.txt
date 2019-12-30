@@ -10,7 +10,7 @@ digit
 %>
 
 #GRAMMAR
-E->F T <% (e)=>new Expr(e)  %>;
+E->F T <% (e)=>new Expr(e)  %> | F;
 T-> "+"F T| '-'F T | NIL <% (e)=>new Term(e) %>;
 F->digit | '('E')' <% (e)=>new Factor(e)%>;
 

@@ -1,4 +1,4 @@
-import { ASTree, ASTElement } from "@/definition";
+import { ASTree, ASTElement } from "@parser-generator/definition";
 import { MockToken } from "../../toolkit";
 
 class ASTList implements ASTree {

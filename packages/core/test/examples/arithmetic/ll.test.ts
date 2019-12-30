@@ -1,7 +1,6 @@
-import { LLParser } from "../../../src/ll-parser";
-import { NonTerminal, ASTree, ASTElement } from "../../../src/definition";
-import { Grammar, TokenPro, Production, SymbolWrapper, NIL } from "@/definition/syntax";
-import { FirstCalculator, FollowCalculator } from "@/first-follow";
+import { LLParser } from "../.././../src/ll/ll-parser";
+import { NonTerminal, ASTree, ASTElement ,Grammar, TokenPro, Production, SymbolWrapper, NIL } from "@parser-generator/definition";
+import { FirstCalculator, FollowCalculator } from "../.././../src/first-follow";
 import { MockLexer, MockToken } from "../../toolkit";
 import should from "should";
 

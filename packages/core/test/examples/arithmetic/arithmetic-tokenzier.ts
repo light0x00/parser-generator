@@ -1,6 +1,6 @@
 import rootDebug from "debug";
 import { cloneDeep } from "lodash";
-import { Terminal, TokenPro, EOF,AbstractRegexpLexer2 ,IToken} from "@/definition";
+import { Terminal, TokenPro, EOF,AbstractRegexpLexer2 ,IToken} from "@parser-generator/definition";
 let debug = rootDebug("APP:tokenizer");
 
 export enum Tag {

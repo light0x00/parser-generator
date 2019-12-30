@@ -1,8 +1,8 @@
 import should from "should";
-import { GrammarLexer, parse, ProgramNode, CodegenVisitor } from "@/grammar-interpreter";
+import { GrammarLexer, parse, ProgramNode, TSCodegenVisitor, EvalVisitor } from "../src/codegen";
 import { getMock } from "./toolkit";
-import { Grammar } from "@/definition/syntax";
-import { FirstCalculator, FollowCalculator } from "@/first-follow";
+import { FirstCalculator, FollowCalculator } from "../src/first-follow";
+import { IGrammar } from "@parser-generator/definition";
 
 describe(`Grammar Interpreter Test`, function () {
 
@@ -22,10 +22,12 @@ describe(`Grammar Interpreter Test`, function () {
 				program = parse(t);
 			});
 		});
-		let g: Grammar;
+		let g: IGrammar;
 		it(`eval`, function () {
 			should.doesNotThrow(function () {
-				g = program.eval();
+				let visitor = new EvalVisitor({parser:"LL"});
+				program.accpet(visitor);
+				g= visitor.grammar;
 				console.log(g + "");
 			});
 		});
@@ -35,7 +37,7 @@ describe(`Grammar Interpreter Test`, function () {
 				let firstTable = first.getFirstTable();
 				let follow = new FollowCalculator(g, first);
 				let followTable = follow.getFollowTable();
-				let vi = new CodegenVisitor({ firstTable, followTable, parser: "LL" });
+				let vi = new TSCodegenVisitor({ firstTable, followTable, parser: "LL" });
 				program.accpet(vi);
 				console.log(vi.code);
 			});

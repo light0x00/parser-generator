@@ -1,0 +1,26 @@
+<% import { Expr } from "./ast"; %>
+
+#TOKEN_PROTOTYPES
+digit
+
+<%
+//脚本片段1
+%>
+
+#GRAMMAR
+S->E;
+E->E '+' E | E '-' E |E'*'E |E'/'E | '(' E ')' | digit  <% (e)=>new Expr(e)  %>;
+
+<%
+//脚本片段2
+%>
+
+#SYMBOL_ASSOC_PREC
+'+' left 0
+'-' left 0
+'*' left 1
+'/' left 1
+
+<%
+//脚本片段3
+%>

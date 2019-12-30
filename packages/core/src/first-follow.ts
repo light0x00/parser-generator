@@ -1,6 +1,6 @@
 
 import rootDebug from "debug";
-import { NIL, Production, NonTerminal, IGrammar, Terminal, SSymbol, isNonTerminal, isTerminal, EOF } from "./definition";
+import { NIL, Production, NonTerminal, IGrammar, Terminal, SSymbol, isNonTerminal, isTerminal, EOF } from "@parser-generator/definition";
 import { CyclicDepsDector } from "./utils";
 let debug = rootDebug("PG:first&follow");
 
@@ -153,7 +153,7 @@ export class FollowCalculator {
 						if (non_terminal != target && !whichHaveAddedFollowSet.has(non_terminal)) {   //issue: 6,7 自递归 && 重复添加
 							if (this.cyclicDector.registerAndCheckCycl(target, non_terminal)) // issue: 9.循环依赖 跳过
 								continue;
-							debug(`+Since ${target.name} is at the end of production ${prod.nt},add Follow(${non_terminal.name})`);
+							debug(`+Since ${target.name} is at the end of production ${prod.head},add Follow(${non_terminal.name})`);
 							addAll(follow_set, this.getFollowSet(non_terminal));
 							whichHaveAddedFollowSet.add(non_terminal); //标记Follow(p)已添加
 						}

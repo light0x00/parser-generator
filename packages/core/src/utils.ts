@@ -1,4 +1,4 @@
-import { IToken } from "@/definition";
+import { IToken } from "@parser-generator/definition";
 import { isIterable } from "@light0x00/shim";
 
 export class CyclicDepsDector<T> {
@@ -50,7 +50,7 @@ export class CyclicDepsDector<T> {
 }
 
 export class MismatchError extends Error {
-	constructor(expected: Object, actual: IToken) {
+	constructor(expected: Object, actual: Object) {
 		let err_msg;
 		if (isIterable(expected)) {
 			let expectation = "";

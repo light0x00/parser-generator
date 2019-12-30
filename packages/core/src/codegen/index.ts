@@ -1,8 +1,9 @@
-import { NonTerminal, Production, TokenPro, AbstractRegexpLexer, NIL } from "./definition";
+import { NonTerminal, Production, TokenPro, AbstractRegexpLexer, NIL, IGrammar, AugmentedGrammar, SymbolWrapper, SSymbol, SymbolTrait, Grammar, EOF, ParsingTable, Shift, Accept, Goto, Reduce, SymbolTraits } from "@parser-generator/definition";
 import { assert } from "@light0x00/shim";
 import { cloneDeep, groupBy, Dictionary } from "lodash";
-import { SymbolWrapper, SSymbol, SymbolTraits, SymbolTrait, Grammar, EOF } from "./definition/syntax";
-import { FirstTable, FollowTable } from "./first-follow";
+import { FirstTable, FollowTable } from "../first-follow";
+import { LLParser } from "../ll/ll-parser";
+import { LRParser } from "../lr/lr-parser";
 
 /*************************************** Lexical Analysis  ****************************************/
 
@@ -180,26 +181,24 @@ export abstract class ASTree {
 
 export class ProgramNode extends ASTree {
 	grammarNode: GrammarNode;
-	private paNode: PrecAssocNode | undefined
 	private blocks: ASTree[]
+	traits: SymbolTraits;
+
 	constructor(gNode: GrammarNode, paNode: PrecAssocNode | undefined, blocks: ASTree[]) {
 		super();
 		this.grammarNode = gNode;
-		this.paNode = paNode;
 		this.blocks = blocks;
+
+		if (paNode == undefined)
+			this.traits = new Map<SSymbol, SymbolTrait>();
+		else
+			this.traits = paNode.traits;
 	}
 	accpet(visitor: IVisitor): void {
 		for (let c of this.blocks) {
 			c.accpet(visitor);
 		}
 		visitor.visitProgramNode(this);
-	}
-	eval(): Grammar {
-		let traits;
-		if (this.paNode != undefined) {
-			traits = this.paNode.eval();
-		}
-		return this.grammarNode.eval(traits);
 	}
 }
 
@@ -216,18 +215,15 @@ class ScriptNode extends ASTree {
 
 class PrecAssocNode extends ASTree {
 	children: PrecassocItemNode[]
+	traits: SymbolTraits = new Map<SSymbol, SymbolTrait>();
 	constructor(children: PrecassocItemNode[]) {
 		super();
 		this.children = children;
-
-	}
-	eval(): SymbolTraits {
-		let traits = new Map<SSymbol, SymbolTrait>();
 		for (let c of this.children) {
-			traits.set(c.symbol.value as string, new SymbolTrait(c.prec, c.leftAssoc));
+			this.traits.set(c.symbol.value as string, new SymbolTrait(c.prec, c.leftAssoc));
 		}
-		return traits;
 	}
+
 	accpet(visitor: IVisitor): void {
 		visitor.visitPrecAssocNode(this);
 	}
@@ -245,7 +241,6 @@ class PrecassocItemNode extends ASTree {
 		this.prec = tokens[2].value as number;
 	}
 	accpet(visitor: IVisitor): void {
-		//此处不实现 在父节点统一生成
 		throw new Error("Method not implemented.");
 	}
 }
@@ -254,6 +249,7 @@ class Env {
 	private syms = new Map<string, TokenPro | NonTerminal>()
 	//反向索引
 	private rsyms = new Map<TokenPro | NonTerminal, string>(); //记录变量对应的对象 的变量名
+	private prods = new Map<string, Production>();	//记录Production对象对应的变量名
 	private rprods = new Map<Production, string>();	//记录Production对象对应的变量名
 	constructor() {
 		this.registerSym("NIL", NIL);
@@ -276,10 +272,15 @@ class Env {
 	//Production
 	registerProd(prod: Production, varName: string) {
 		this.rprods.set(prod, varName!);
+		this.prods.set(varName, prod);
 	}
-	getProdVarName(prod: Production): string | undefined {
-		assert(this.rprods.has(prod));
-		return this.rprods.get(prod);
+	getProdVarName(prod: Production): string {
+		assert(this.rprods.has(prod), `Undeclared production ${prod}`);
+		return this.rprods.get(prod)!;
+	}
+	getProd(varName: string): Production {
+		assert(this.prods.has(varName), `Undeclared productio ${varName}`);
+		return this.prods.get(varName)!;
 	}
 
 }
@@ -294,9 +295,10 @@ class GrammarNode extends ASTree {
 	private ntNodes: NonTerminalNode[] //非终结符原型
 	private tpNodes: TokenProNode[]	//终结符原型
 	//属性
-	private nts: NonTerminal[] = []
+	nts: NonTerminal[] = []
 	startSym!: NonTerminal;
 	prodNodeGroups: Dictionary<ProductionNode[]>
+
 	constructor(tNodes: TokenProNode[], ntNodes: NonTerminalNode[], prodNodes: ProductionNode[]) {
 		super();
 		this.tpNodes = tNodes;
@@ -334,6 +336,7 @@ class GrammarNode extends ASTree {
 			for (let pNode of group) {
 				pNode.pid = prodIdCount++;
 				pNode.varName = "p" + pNode.pid;
+				pNode.env = this.env;
 			}
 		}
 	}
@@ -342,8 +345,8 @@ class GrammarNode extends ASTree {
 		for (let tpNode of this.tpNodes) {
 			visitor.visitTokenProNode(tpNode);
 		}
-		for (let ntpNode of this.ntNodes) {
-			visitor.visitNonterminalNode(ntpNode);
+		for (let ntNode of this.ntNodes) {
+			visitor.visitNonterminalNode(ntNode);
 		}
 		for (let pNode of this.prodNodes) {
 			visitor.visitProductionNode(pNode);
@@ -351,22 +354,6 @@ class GrammarNode extends ASTree {
 		visitor.visitGrammarNode(this);
 	}
 
-	eval(symbolTraits: SymbolTraits | undefined): Grammar {
-		let prods = new Array<Production>();
-		for (let key in this.prodNodeGroups) {
-			let group = this.prodNodeGroups[key];
-			let ntProds = new Array<Production>();
-			for (let pNode of group) {
-				let prod = pNode.eval(this.env);
-				prods.push(prod);
-				this.env.registerProd(prod, pNode.varName!);
-				ntProds.push(prod);
-			}
-			let nt = this.env.getSym(key) as NonTerminal;
-			nt.prods = ntProds;
-		}
-		return new Grammar(this.nts, prods, this.startSym, symbolTraits);
-	}
 }
 
 class TokenProNode extends ASTree {
@@ -384,19 +371,20 @@ class TokenProNode extends ASTree {
 
 }
 
-type RawSymbol = { symbol: Token; action: Token | undefined; }
+type RawSymbol = { symToken: Token; action: Token | undefined; }
 
 class ProductionNode extends ASTree {
 
 	preAction: Token | undefined
 	postAction: Token | undefined
 	left: Token
-	ntVarName: string
 	rawBody: RawSymbol[]
-	prod: Production | undefined;
+
 	//由父节点(GrammarNode)指派
-	varName: string | undefined;
+	varName!: string;
+	ntVarName: string
 	pid: number | undefined
+	env!: Env
 	constructor(nt: Token, body: Token[]) {
 		super();
 		this.left = nt;
@@ -418,64 +406,21 @@ class ProductionNode extends ASTree {
 				action = body[i + 1];
 				i++;
 			}
-			this.rawBody.push({ symbol, action: action });
+			this.rawBody.push({ symToken: symbol, action: action });
 		}
 	}
-	eval(env: Env): Production {
-		let nt = env.getSym(this.ntVarName) as NonTerminal;
-		let body = new Array<SymbolWrapper>();
-		for (let { symbol } of this.rawBody) {
-			if (symbol.tag == Tag.STRING) {
-				body.push(new SymbolWrapper(symbol.value as string));
-			} else if (symbol.tag == Tag.ID) {
-				let proto = env.getSym(symbol.value as string);
-				assert(proto != undefined, `undeclared identifier ${symbol.value} at ` + pos(symbol));
-				body.push(new SymbolWrapper(proto));
-			} else if (symbol.tag == Tag.NIL) {
-				body.push(new SymbolWrapper(NIL));
-			}
-		}
-		let preAction = this.preAction == undefined ? undefined : eval(this.preAction.value as string);
-		let postAction = this.postAction == undefined ? undefined : eval(this.postAction.value as string);
-		assert(this.pid != undefined);
-		return new Production(this.pid, nt, body, preAction, postAction);
-	}
-
 	accpet(visitor: IVisitor): void {
 		visitor.visitProductionNode(this);
 	}
-	// gen(varName: string, pid: number) {
-	// 	let code = `let ${varName} = new ${Production.name}(${pid},${this.left.value}`;
-	// 	code += ",[";
-	// 	for (let { symbol, action } of this.rawBody) {
-	// 		let symbolStr = symbol.tag == Tag.STRING ? `"${symbol.value}"` : symbol.value;
-	// 		let actionStr = (action == undefined ? "" : "," + action.value);
-	// 		code += `\n\t\tnew ${SymbolWrapper.name}(${symbolStr}${actionStr}),`;
-	// 	}
-	// 	code = code.replace(/,$/, "");
-	// 	code += "]";
-	// 	if (this.preAction != undefined)
-	// 		code += "," + this.preAction.value;
-	// 	else
-	// 		code += ",undefined";
-	// 	if (this.postAction != undefined)
-	// 		code += "," + this.postAction.value;
-	// 	else
-	// 		code += ",undefined";
-	// 	code += ");";
-	// 	this.emit(code);
-	// }
-
 }
 
 class NonTerminalNode extends ASTree {
-
-	varName: string
+	_varName: string
 	token: Token;
 	prods: ProductionNode[]
 	constructor(token: Token, prods: ProductionNode[]) {
 		super();
-		this.varName = token.value as string;
+		this._varName = token.value as string;
 		this.token = token;
 		this.prods = prods;
 		//前置、后置动作的共享
@@ -504,7 +449,9 @@ class NonTerminalNode extends ASTree {
 				p.postAction = defaultPostAction;
 		}
 	}
-
+	get varName() {
+		return this._varName;
+	}
 	accpet(visitor: IVisitor): void {
 		visitor.visitNonterminalNode(this);
 	}
@@ -550,50 +497,51 @@ export function parse(lexer: GrammarLexer): ProgramNode {
 			- PREC_ASSOC
 		*/
 		//如果生成代码时需要保证每个块的顺序 则用链表存储顺序
-		let scriptNodes = new Array<ASTree>();
+		let blocks = new Array<ASTree>();
 
 		let grammarNode: GrammarNode | undefined;
 		let precAssocNode: PrecAssocNode | undefined;
 		let terminalProtoNodes: TokenProNode[] | undefined;
 
-		while (lexer.peek().tag != Tag.EOF) {
-
-			while (lexer.peek().tag == Tag.SCRIPT)
-				scriptNodes.push(new ScriptNode(lexer.next()));
-			if (lexer.peek().tag == Tag.EOF)
-				break;
-
-			if (terminalProtoNodes == undefined) {
-				if (lexer.peek().value == TOKEN_KEY) {
-					lexer.next();
-					terminalProtoNodes = tokenDeclarationsBlock();
-				} else {
-					terminalProtoNodes = [];
-				}
-			} else if (grammarNode == undefined) {
-				if (lexer.peek().value == GRAMMAR_KEY) {
-					lexer.next();
-					grammarNode = grammarBlock(terminalProtoNodes);
-					scriptNodes.push(grammarNode);
-				} else {
-					misMatch(GRAMMAR_KEY, lexer.peek().value as string);
-				}
-			} else if (precAssocNode == undefined) {
-				if (lexer.peek().value == SPA_KEY) {
-					lexer.next();
-					precAssocNode = precAssocBlock();
-					if (precAssocNode != undefined)
-						scriptNodes.push(precAssocNode);
-				} else {
-					precAssocNode = new PrecAssocNode([]);
-				}
-			} else {
-				throw new Error(`Unexpected block "${lexer.peek().value}" at ` + pos(lexer.peek()));
-			}
+		blocks.push(...scriptBlock());
+		//token 声明
+		if (lexer.peek().value == TOKEN_KEY) {
+			lexer.next();
+			terminalProtoNodes = tokenDeclarationsBlock();
+		} else {
+			terminalProtoNodes = [];
 		}
-		if (grammarNode == undefined)
-			throw new Error(`grammar block is required`);
-		return new ProgramNode(grammarNode, precAssocNode, scriptNodes);
+		blocks.push(...scriptBlock());
+		//文法
+		if (lexer.peek().value == GRAMMAR_KEY) {
+			lexer.next();
+			grammarNode = grammarBlock(terminalProtoNodes);
+			blocks.push(grammarNode);
+		} else {
+			misMatch(GRAMMAR_KEY, lexer.peek().value as string);
+		}
+		blocks.push(...scriptBlock());
+		//优先级 结合性
+		if (lexer.peek().value == SPA_KEY) {
+			lexer.next();
+			precAssocNode = precAssocBlock();
+			if (precAssocNode != undefined)
+				blocks.push(precAssocNode);
+		} else {
+			precAssocNode = new PrecAssocNode([]);
+		}
+		blocks.push(...scriptBlock());
+		if (lexer.peek().tag != Tag.EOF) {
+			throw new Error(`Unexpected block "${lexer.peek().value}" at ` + pos(lexer.peek()));
+		}
+		return new ProgramNode(grammarNode!, precAssocNode, blocks);
+	}
+
+	function scriptBlock(): ScriptNode[] {
+		let scriptNodes = [];
+		while (lexer.peek().tag == Tag.SCRIPT)
+			scriptNodes.push(new ScriptNode(lexer.next()));
+		return scriptNodes;
 	}
 
 	function tokenDeclarationsBlock(): TokenProNode[] {
@@ -611,7 +559,6 @@ export function parse(lexer: GrammarLexer): ProgramNode {
 	}
 
 	function precAssocBlock(): PrecAssocNode | undefined {
-		// assert(lookahead.tag == Tag.HEAD && lookahead.value == "precassoc");
 		let items = new Array<PrecassocItemNode>();
 		while (isSymbol(lexer.peek())) {
 			let sym = lexer.next();
@@ -725,9 +672,12 @@ export function parse(lexer: GrammarLexer): ProgramNode {
 	}
 }
 
+export function parseGrammar(grammar: string) {
+	return parse(new GrammarLexer(grammar));
+}
 /*************************************** Semantic Analysis ****************************************/
 
-interface IVisitor {
+export interface IVisitor {
 	visitProgramNode(node: ProgramNode): void;
 	visitScriptNode(node: ScriptNode): void;
 	visitGrammarNode(node: GrammarNode): void;
@@ -737,26 +687,105 @@ interface IVisitor {
 	visitPrecAssocNode(node: PrecAssocNode): void;
 }
 
-type Context = {
-	firstTable?: FirstTable;
-	followTable?: FollowTable;
-	parser?: "LL" | "SLR" | "LR1"
+export type EvalContext = {
+	parser: "LL" | "SLR" | "LR1" | "LALR"
 }
 
-const DEFINITION_PACKAGE = "@/definition";
-const LL_PARSER_PACKAGE = "@/ll-parser";
-const FIRST_SET_VAR = "firstTable";
-const FOLLOW_SET_VAR = "followTable";
-const SYMBOL_TRAITS_VAR ="symbolTraits";
+export class EvalVisitor implements IVisitor {
 
-export class CodegenVisitor implements IVisitor {
+	private traits: SymbolTraits | undefined;
+	private nts: NonTerminal[] = [];
+	private startSym!: NonTerminal;
+	private prods: Production[] = []
+
+	private context: EvalContext;
+	constructor(context: EvalContext) {
+		this.context = context;
+	}
+
+	private _grammar: IGrammar | undefined
+	get grammar() {
+		if (this._grammar == undefined) {
+			let { parser } = this.context;
+			if (parser == "LL")
+				this._grammar = new Grammar(this.nts, this.prods, this.startSym, this.traits); //根据配置决定初始化
+			else
+				this._grammar = new AugmentedGrammar(this.nts, this.prods, this.startSym, this.traits); //根据配置决定初始化
+		}
+		return this._grammar;
+	}
+
+	visitProgramNode(node: ProgramNode): void {
+		//
+	}
+	visitScriptNode(node: ScriptNode): void {
+		//
+	}
+	visitGrammarNode(node: GrammarNode): void {
+		this.startSym = node.startSym;
+		this.nts = node.nts;
+	}
+	visitTokenProNode(node: TokenProNode): void {
+		//
+	}
+	visitNonterminalNode(node: NonTerminalNode): void {
+		//
+	}
+	visitProductionNode(node: ProductionNode): void {
+		let nt = node.env.getSym(node.ntVarName) as NonTerminal;
+		let body = new Array<SymbolWrapper>();
+		for (let { symToken } of node.rawBody) {
+			if (symToken.tag == Tag.STRING) {
+				body.push(new SymbolWrapper(symToken.value as string));
+			} else if (symToken.tag == Tag.ID || symToken.tag == Tag.NIL) {
+				let proto = node.env.getSym(symToken.value as string);
+				assert(proto != undefined, `Undeclared identifier ${symToken.value} at ` + pos(symToken));
+				body.push(new SymbolWrapper(proto));
+			} else {
+				throw new Error(`Unknow token ${symToken}!`);
+			}
+		}
+		let preAction = node.preAction == undefined ? undefined : eval(node.preAction.value as string);
+		let postAction = node.postAction == undefined ? undefined : eval(node.postAction.value as string);
+		assert(node.pid != undefined);
+		let prod = new Production(node.pid, nt, body, preAction, postAction);
+		node.env.registerProd(prod, node.varName!); //对象到变量名的反向索引(用于代码生成)
+		nt.prods.push(prod); //追加到所属的非终结符
+		this.prods.push(prod);
+	}
+	visitPrecAssocNode(node: PrecAssocNode): void {
+		this.traits = node.traits;
+	}
+}
+
+export type CodegenContext = {
+	firstTable?: FirstTable;
+	followTable?: FollowTable;
+	lrParsingTable?: ParsingTable;
+	parser: "LL" | "SLR" | "LR1" | "LALR"
+}
+
+const DEFINITION_PACKAGE = "@parser-generator/definition";
+const LL_PARSER_PACKAGE = "@parser-generator/core";
+const LR_PARSER_PACKAGE = "@parser-generator/core";
+const LR_PARSING_TABLE_VAR = "table";
+const FIRST_SET_VAR = "first";
+const FOLLOW_SET_VAR = "follow";
+const SYMBOL_TRAITS_VAR = "traits";
+
+export class TSCodegenVisitor implements IVisitor {
 
 	private _code: string = "";
-	private context: Context
-	constructor(context: Context) {
+	private context: CodegenContext
+	constructor(context: CodegenContext) {
 		this.context = context;
-		this.emitln(`import { ${NonTerminal.name}, ${TokenPro.name}, ${Production.name}, ${SymbolWrapper.name}, ${SymbolTrait.name}, ` +
-			`NIL, Terminal, EOF } from "${DEFINITION_PACKAGE}"`);
+		this.emit(`import { ${NonTerminal.name}, ${TokenPro.name}, ${Production.name}, ${SymbolWrapper.name}, ${SymbolTrait.name}, NIL, Terminal, EOF`);
+		if (context.parser == "LL") {
+			this.emit("}");
+		} else {
+			this.emit(`,${ParsingTable.name}, ${Goto.name}, ${Shift.name}, ${Accept.name}, ${Reduce.name} }`);
+		}
+		this.emitln(` from "${DEFINITION_PACKAGE}";`);
 	}
 
 	private emit(code: string) {
@@ -775,19 +804,17 @@ export class CodegenVisitor implements IVisitor {
 		//parser
 		if (this.context.parser == "LL") {
 			assert(firstTable != undefined && followTable != undefined);
-			this.emitln(`import {LLParser} from "${LL_PARSER_PACKAGE}"`);
-			this.emitln(`export let parser = new LLParser(${env.getSymVarName(node.grammarNode.startSym)},${FIRST_SET_VAR},${FOLLOW_SET_VAR});`);
-		} else if (this.context.parser == "SLR") {
-			//TODO
-		} else if (this.context.parser == "LR1") {
-			//TODO
+			this.emitln(`import {${LLParser.name}} from "${LL_PARSER_PACKAGE}";`);
+			this.emitln(`export let parser = new ${LLParser.name}(${env.getSymVarName(node.grammarNode.startSym)},${FIRST_SET_VAR},${FOLLOW_SET_VAR});`);
+		} else {
+			this.emitln(`import {${LRParser.name}} from "${LR_PARSER_PACKAGE}";`);
+			this.emitln(`export let parser = new ${LRParser.name}(${LR_PARSING_TABLE_VAR});`);
 		}
 	}
 	visitScriptNode(node: ScriptNode): void {
 		this.emit(node.script + "\n");
 	}
 	visitGrammarNode(node: GrammarNode): void {
-		//prods
 		for (let key in node.prodNodeGroups) {
 			let group = node.prodNodeGroups[key];
 			let pnames = new Array<string>();
@@ -797,9 +824,10 @@ export class CodegenVisitor implements IVisitor {
 			this.emitln(`${key}.prods=[${pnames.join(",")}];`);
 		}
 		let env = node.env;
-		//first table
-		let { firstTable } = this.context;
-		if (firstTable != undefined) {
+		if (this.context.parser == "LL") {
+			//first table
+			let { firstTable, followTable } = this.context;
+			assert(firstTable != undefined && followTable != undefined,"First-table and follow-table is required for lr-parser code generator");
 			this.emitln("/* first set */");
 			this.emitln(`let ${FIRST_SET_VAR} = new Map<${NonTerminal.name},Map<Terminal,${Production.name}>>();`);
 			for (let [nt, fset] of firstTable) {
@@ -815,10 +843,7 @@ export class CodegenVisitor implements IVisitor {
 				stmt += ");";
 				this.emitln(stmt);
 			}
-		}
-		//follow table
-		let { followTable } = this.context;
-		if (followTable != undefined) {
+			//follow table
 			this.emitln("/* follow set */");
 			this.emitln(`let ${FOLLOW_SET_VAR} = new Map<${NonTerminal.name},Set<Terminal>>();`);
 			for (let [nt, fset] of followTable) {
@@ -835,6 +860,31 @@ export class CodegenVisitor implements IVisitor {
 				stmt += ");";
 				this.emitln(stmt);
 			}
+		} else {
+			//lr table
+			let { lrParsingTable } = this.context;
+			assert(lrParsingTable!=undefined,"LR parsing table is required for lr-parser code generator");
+			this.emitln(`let ${LR_PARSING_TABLE_VAR} = new ${ParsingTable.name}();`);
+			for (let [stateId, ops] of lrParsingTable.table) {
+				for (let [sym, op] of ops) {
+					if (typeof sym === "string") {
+						this.emit(`${LR_PARSING_TABLE_VAR}.put(${stateId},"${sym}",`);
+					} else {
+						this.emit(`${LR_PARSING_TABLE_VAR}.put(${stateId},${env.getSymVarName(sym)},`);
+					}
+					if (op.isShift()) {
+						this.emit(`new ${Shift.name}(${op.nextStateId})`);
+					} else if (op.isReduce()) {
+						this.emit(`new ${Reduce.name}(${env.getProdVarName(op.prod)})`);
+					} else if (op.isGoto()) {
+						this.emit(`new ${Goto.name}(${op.nextStateId})`);
+					}
+					else if (op.isAccept()) {
+						this.emit(`new ${Accept.name}()`);
+					}
+					this.emitln(");");
+				}
+			}
 		}
 
 	}
@@ -845,12 +895,14 @@ export class CodegenVisitor implements IVisitor {
 		this.emitln(`let ${node.varName} = new ${NonTerminal.name}("${node.varName}");`);
 	}
 	visitProductionNode(node: ProductionNode): void {
+		this.emitln(`/* ${node.env.getProd(node.varName).toString()} */`);
+
 		let code = `let ${node.varName} = new ${Production.name}(${node.pid},${node.ntVarName}`;
 		code += ",[";
-		for (let { symbol, action } of node.rawBody) {
+		for (let { symToken: symbol, action } of node.rawBody) {
 			let symbolStr = symbol.tag == Tag.STRING ? `"${symbol.value}"` : symbol.value;
 			let actionStr = (action == undefined ? "" : "," + action.value);
-			code += `\n\t\tnew ${SymbolWrapper.name}(${symbolStr}${actionStr}),`;
+			code += `\nnew ${SymbolWrapper.name}(${symbolStr}${actionStr}),`;
 		}
 		code = code.replace(/,$/, "");
 		code += "]";
@@ -875,6 +927,5 @@ export class CodegenVisitor implements IVisitor {
 		}
 		this.emit("\n");
 	}
-
-
 }
+

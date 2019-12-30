@@ -1,4 +1,4 @@
-import { NonTerminal, TokenPro, Production, SymbolWrapper, SymbolTrait, NIL, Terminal, EOF } from "@/definition";
+import { NonTerminal, TokenPro, Production, SymbolWrapper, SymbolTrait, NIL, Terminal, EOF } from "@parser-generator/definition";
 import { Expr, Term, Factor } from "./ast";
 
 //脚本片段1
@@ -50,7 +50,7 @@ symbolTraits.set("/", new SymbolTrait(1, true));
 
 //脚本片段3
 
-import { LLParser } from "@/ll-parser";
+import { LLParser } from "../../../src/ll/ll-parser";
 export let parser = new LLParser(E, firstTable, followTable);
 
 //脚本片段3

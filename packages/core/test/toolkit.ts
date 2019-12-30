@@ -1,7 +1,7 @@
 import fs from "fs";
 import { assert } from "@light0x00/shim";
-import { SymbolWrapper, Terminal, EOF, NonTerminal, Production, SSymbol, IGrammar } from "@/definition/syntax";
-import { IToken, ILexer } from "@/definition";
+import { SymbolWrapper, Terminal, EOF, NonTerminal, Production, SSymbol, IGrammar } from "@parser-generator/definition";
+import { IToken, ILexer } from "@parser-generator/definition";
 
 
 export const getMock = (fullpath: string) => fs.readFileSync(fullpath, "utf8");
@@ -51,7 +51,6 @@ export class SimpleGrammar implements IGrammar {
 		return this._nonTerminals;
 	}
 	productions(): Production[] {
-		// throw new Error("Method not implemented.");
 		return this._productions;
 	}
 	//start symbol
@@ -64,8 +63,8 @@ export class SimpleGrammar implements IGrammar {
 }
 
 export class MockToken implements IToken {
-	_key: Terminal
-	_val: Object
+	private _key: Terminal
+	private _val: Object
 	constructor(key: Terminal, val: Object = key) {
 		this._key = key;
 		this._val = val;

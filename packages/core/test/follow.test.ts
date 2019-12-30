@@ -1,7 +1,7 @@
 import "mocha";
 import "should";
-import { FollowCalculator, FirstCalculator as FirstSetCalculator } from "@/first-follow";
-import { NIL, EOF, NonTerminal } from "@/definition";
+import { FollowCalculator, FirstCalculator as FirstSetCalculator } from "../src";
+import { NIL, EOF, NonTerminal } from "@parser-generator/definition";
 import { SimpleGrammar } from "./toolkit";
 
 describe("============The calculation of follow set============", function () {

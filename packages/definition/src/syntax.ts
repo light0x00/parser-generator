@@ -1,5 +1,5 @@
 import { assert, Stack } from "@light0x00/shim";
-import { IToken } from "@/definition/lexical";
+import { IToken, TableKey } from "./lexical";
 /*******************************************************************************************************
 符号的原型
 	符号原型的作用是用于建立一种逻辑上的匹配关系.
@@ -20,11 +20,12 @@ import { IToken } from "@/definition/lexical";
 /**
  * 非终结符符号原型
  */
-export class NonTerminal {
+export class NonTerminal implements TableKey {
+
 	private _name: string
-	private _prods: Production[] | undefined
+	private _prods: Production[]
 	private _isStart: boolean
-	constructor(name: string, isStart: boolean = false, prods?: Production[]) {
+	constructor(name: string, isStart: boolean = false, prods: Production[] = []) {
 		this._name = name;
 		this._isStart = isStart;
 		this._prods = prods;
@@ -33,7 +34,6 @@ export class NonTerminal {
 		return this._name;
 	}
 	get prods() {
-		assert(this._prods != undefined);
 		return this._prods;
 	}
 	set prods(ps: Production[]) {
@@ -45,12 +45,14 @@ export class NonTerminal {
 	toString() {
 		return this._name;
 	}
-
+	key(): SSymbol {
+		return this;
+	}
 }
 /**
  * token原型
  */
-export class TokenPro implements IToken{
+export class TokenPro implements IToken {
 
 	private name: string  //just for debug
 	constructor(name: string) {
@@ -60,7 +62,7 @@ export class TokenPro implements IToken{
 		return this.name;
 	}
 	key(): Terminal {
-		throw new Error("Method not implemented.");
+		return this;
 	}
 }
 export const NIL = new TokenPro("NIL");
@@ -116,21 +118,27 @@ export class Production {
 	private _preAction: PreAction | undefined
 	private _postAction: PostAction | undefined
 
-	constructor(id: number, nt: NonTerminal, body: SymbolWrapper[], pre?: PreAction, post?: PostAction) {
+	private _leftAssoc: boolean;
+	private _prec: number;
+
+	constructor(id: number, nt: NonTerminal, body: SymbolWrapper[], preAction?: PreAction, postAction?: PostAction, leftAssoc = false, prec = -1) {
 		this._id = id;
 		this._nt = nt;
 		this._actionBody = body;
-		this._preAction = pre;
-		this._postAction = post;
+		this._preAction = preAction;
+		this._postAction = postAction;
 		this._body = new Array<SSymbol>();
+		this._leftAssoc = leftAssoc;
+		this._prec = prec;
 		for (let asym of body) {
 			this._body.push(asym.value);
 		}
 	}
+
 	get id() {
 		return this._id;
 	}
-	get nt() {
+	get head() {
 		return this._nt;
 	}
 	get body() {
@@ -146,7 +154,22 @@ export class Production {
 		assert(this._postAction != undefined, "post action is required for Parser");
 		return this._postAction;
 	}
-
+	get action(){
+		return this.postAction;
+	}
+	get prec() { return this._prec;}
+	set prec(val) {
+		this._prec = val;
+	}
+	get leftAssoc() {
+		return this._leftAssoc;
+	}
+	set leftAssoc(val) {
+		this._leftAssoc = val;
+	}
+	isEpsilon() {
+		return this._body.length == 1 && this._body[0] === NIL;
+	}
 	toString() {
 		return (this._preAction == undefined ? "" : "<%" + this.preAction + "%>") +
 			`(${this._id}) ${this._nt}->${this._actionBody.map(o => o.toString()).join("")}`
@@ -203,14 +226,31 @@ export class Grammar implements IGrammar {
 	protected prods: Production[]
 	protected traits: SymbolTraits
 	protected startSym: NonTerminal
-	constructor(nts: NonTerminal[], prods: Production[], startSymbol: NonTerminal, traits?: SymbolTraits) {
+	constructor(nts: NonTerminal[], prods: Production[], startSymbol: NonTerminal, traits: SymbolTraits = new Map<SSymbol, SymbolTrait>()) {
+
 		this.nts = nts;
 		this.prods = prods;
 		this.startSym = startSymbol;
-		if (traits != undefined)
-			this.traits = traits;
-		else
-			this.traits = new Map<SSymbol, SymbolTrait>();
+		this.traits = traits;
+		//处理产生式的优先级与结合性
+		for (let p of prods) {
+			let prec = -1;
+			let leftAssoc = false;
+			for (let s of p.body) {
+				if (traits.has(s)) {
+					let trait = traits.get(s)!;
+					if (trait.prec > prec) {
+						prec = trait.prec;
+						leftAssoc = trait.leftAssoc;
+					}
+				}
+			}
+			p.prec = prec;
+			p.leftAssoc = leftAssoc;
+		}
+		this.validate();
+	}
+	protected validate() {
 	}
 	nonTerminals(): NonTerminal[] {
 		return this.nts;
@@ -226,6 +266,159 @@ export class Grammar implements IGrammar {
 	}
 }
 
+/*************************************** LR相关 ****************************************/
+
+export class AugmentedGrammar extends Grammar {
+	protected validate() {
+		assert(this.startSym.prods.length == 1, `The start symbol of an augmented grammar has one and only one production! but ${this.startSym} has ${this.startSym.prods.length}`);
+	}
+}
+
+/* 表示LR语法分析表格的操作 */
+export abstract class Operation {
+	abstract equals(obj: Object): boolean
+
+	isReduce(): this is Reduce {
+		return false;
+	}
+	isShift(): this is Shift {
+		return false;
+	}
+
+	isGoto(): this is Goto {
+		return false;
+	}
+
+	isAccept(): this is Accept {
+		return false;
+	}
+}
+
+export class Shift extends Operation {
+	private _nextStateId: number;
+	constructor(nextStateId: number) {
+		super();
+		this._nextStateId = nextStateId;
+	}
+
+	get nextStateId(){
+		return this._nextStateId;
+	}
+
+	toString() {
+		return `shift ${this._nextStateId}`;
+	}
+	equals(obj: Object) {
+		return obj instanceof Shift && obj._nextStateId == this._nextStateId;
+	}
+	isShift() {
+		return true;
+	}
+}
+
+export class Goto extends Operation {
+	private _nextStateId: number;
+	constructor(nextStateId: number) {
+		super();
+		this._nextStateId = nextStateId;
+	}
+	get nextStateId(){
+		return this._nextStateId;
+	}
+	toString() {
+		return `goto ${this._nextStateId}`;
+	}
+	equals(obj: Object) {
+		return obj instanceof Goto && obj._nextStateId == this._nextStateId;
+	}
+	isGoto() {
+		return true;
+	}
+}
+
+export class Reduce extends Operation {
+	/* 用于归约的产生式 */
+	private _prod: Production;
+
+	constructor(prod: Production) {
+		super();
+		this._prod = prod;
+	}
+	get prod(){
+		return this._prod;
+	}
+	toString() {
+		return `reduce ${this._prod.id}`;
+	}
+	equals(obj: Object) {
+		return obj instanceof Reduce && obj._prod == this._prod;
+	}
+	isReduce() {
+		return true;
+	}
+}
+
+export class Accept extends Operation {
+	constructor() {
+		super();
+	}
+	equals(obj: Object) {
+		return obj instanceof Accept;
+	}
+	toString() {
+		return `accept`;
+	}
+	isAccept() {
+		return true;
+	}
+}
+
+/* TODO 考虑是否应该包装 Map */
+// export type LRParsingTable = Map<number, Map<SSymbol, Operation>>;
+
+export class ParsingTable {
+	private parsingTable = new Map<number, Map<SSymbol, Operation>>()
+
+	get table() {
+		return this.parsingTable;
+	}
+
+	put(state: number, symbol: SSymbol, op: Operation): void {
+		let row = this.parsingTable.get(state);
+		if (row == undefined) {
+			row = new Map<SSymbol, Operation>();
+			this.parsingTable.set(state, row);
+		}
+		row.set(symbol, op);
+	}
+	has(state: number, symbol: SSymbol, op: Operation): boolean {
+		let row = this.parsingTable.get(state);
+		if (row == undefined)
+			return false;
+		let exstingOp = row.get(symbol);
+		if (exstingOp == null)
+			return false;
+		return exstingOp.equals(op);
+	}
+	get(state: number, symbol: SSymbol): Operation | undefined {
+		let row = this.parsingTable.get(state);
+		if (row == undefined)
+			return undefined;
+		return row.get(symbol);
+	}
+
+	getExpectedSymbols(state: number): SSymbol[] {
+		let row = this.parsingTable.get(state);
+		if (row == undefined)
+			return [];
+		return Array.from(row.keys());
+	}
+
+	getExpectedTokens(state: number) {
+		let expS = this.getExpectedSymbols(state);
+		return expS.filter(s => !(s instanceof NonTerminal));
+	}
+}
 
 /**
  * 构成ASTree节点的元素
@@ -234,92 +427,3 @@ export type ASTElement = IToken | ASTree
 
 export interface ASTree {
 }
-
-// export interface ILLASTree {
-// 	appendElement(ele: ASTElement): void;
-// }
-
-// /**
-//  * 文法符号抽象
-//  */
-// export abstract class ISymbol {
-// 	protected _action: undefined | MidAction
-// 	constructor(action: undefined | MidAction) {
-// 		this._action = action;
-// 	}
-// 	isNonTerminal(): this is NonTerminalSymbol {
-// 		return false;
-// 	}
-// 	isTerminal(): this is ValueSymbol | TerminalSymbol {
-// 		return false;
-// 	}
-// 	isValueTerminal(): this is ValueSymbol {
-// 		return false;
-// 	}
-// 	isProtoTerminal(): this is TerminalSymbol {
-// 		return false;
-// 	}
-// 	abstract get value(): string | ISymbolPrototype;
-// 	get action(): undefined | MidAction {
-// 		return this._action;
-// 	}
-// }
-// /**
-//  * 文法中的值类型符号
-//  */
-// export class ValueSymbol extends ISymbol {
-// 	private t: string
-
-// 	constructor(t: string, action?: MidAction) {
-// 		super(action);
-// 		this.t = t;
-// 	}
-// 	get value(): string {
-// 		return this.t;
-// 	}
-// 	toString() {
-// 		return this.t;
-// 	}
-// 	isValueTerminal(): this is ValueSymbol {
-// 		return true;
-// 	}
-// 	isTerminal() {
-// 		return true;
-// 	}
-// }
-
-// /**
-//  * 文法中的原型类型符号
-//  */
-// export abstract class ProtoSymbol<T extends ISymbolPrototype> extends ISymbol {
-
-// 	protected _proto: T
-// 	constructor(proto: T, action?: MidAction) {
-// 		super(action);
-// 		this._proto = proto;
-// 		this._action = action;
-// 	}
-// 	get value(): T {
-// 		return this._proto;
-// 	}
-// 	get proto(): T {
-// 		return this._proto;
-// 	}
-// 	toString() {
-// 		return this._proto.toString();
-// 	}
-// 	isShit(): this is T {
-// 		return false;
-// 	}
-// }
-
-// export class TerminalSymbol extends ProtoSymbol<TokenPro>{
-// 	isTerminal() {
-// 		return true;
-// 	}
-// }
-// export class NonTerminalSymbol extends ProtoSymbol<NonTerminalPro>{
-// 	isNonTerminal() {
-// 		return true;
-// 	}
-// }

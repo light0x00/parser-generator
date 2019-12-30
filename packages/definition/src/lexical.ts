@@ -1,6 +1,10 @@
 
 import { Queue, assert } from "@light0x00/shim";
-import { Terminal } from "./syntax";
+import { SSymbol, Terminal } from "./syntax";
+
+export interface TableKey {
+	key(): SSymbol;
+}
 
 export interface IToken {
 	key(): Terminal
@@ -97,7 +101,7 @@ export abstract class AbstractRegexpLexer<T, A> {
 	}
 	protected abstract createToken(lexeme: string, type: A, match: RegExpExecArray): T | undefined
 	protected onMatchFaild(text: string, lastIndex: number): void {
-		throw new Error(`unrecognized charactor(${lastIndex}):${text[lastIndex]} `);
+		throw new Error(`Unrecognized charactor(${lastIndex}):${text[lastIndex]} `);
 	}
 	protected abstract getEOF(): T
 }

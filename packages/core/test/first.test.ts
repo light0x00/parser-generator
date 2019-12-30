@@ -2,7 +2,7 @@
 import "mocha";
 import "should";
 import { FirstCalculator } from "../src/first-follow";
-import { NonTerminal } from "../src/definition/index";
+import { NonTerminal } from "@parser-generator/definition";
 import { SimpleGrammar } from "./toolkit";
 import should from "should";
 
