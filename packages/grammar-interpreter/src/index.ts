@@ -1,0 +1,1 @@
+export { genParser } from "./inter";
