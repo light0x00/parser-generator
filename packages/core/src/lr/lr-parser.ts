@@ -3,8 +3,8 @@ import { MismatchError } from "../utils";
 import { Stack } from "@light0x00/shim";
 import { ILexer, ASTElement, IToken, ASTree, NonTerminal,ParsingTable } from "@parser-generator/definition";
 
-import rootDebug from "debug";
-let debug = rootDebug("PG:lr-parser");
+import _debug from "debug";
+let debug = _debug("PG:lr-parser");
 
 export class LRParser {
 	parsingTable: ParsingTable

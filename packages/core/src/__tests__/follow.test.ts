@@ -1,6 +1,6 @@
 import "mocha";
 import "should";
-import { FollowCalculator, FirstCalculator as FirstSetCalculator } from "../src";
+import { FollowCalculator, FirstCalculator as FirstSetCalculator } from "..";
 import { NIL, EOF, NonTerminal } from "@parser-generator/definition";
 import { SimpleGrammar } from "./toolkit";
 

@@ -1,7 +1,7 @@
 import { NonTerminal, Terminal, SSymbol as Symbol, EOF } from "@parser-generator/definition";
-import { Item, ItemSet } from "../src/lr/definition";
-import { LR1AutomataTools } from "../src/lr/lr1";
-import { FirstCalculator as FirstSetCalculator } from "../src/first-follow";
+import { Item, ItemSet } from "../lr/definition";
+import { LR1AutomataTools } from "../lr/lr1";
+import { FirstCalculator as FirstSetCalculator } from "../first-follow";
 
 import "should";
 import { SimpleGrammar } from "./toolkit";
