@@ -2,11 +2,13 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0",
+  "version": "0.0.1-alpha.0",
   "npmClient": "yarn",
-  "useWorkspaces": true ,
+  "useWorkspaces": true,
   "publish": {
-	"ignoreChanges": ["*.md"],
-	"message": "chore(release): publish %s"
+    "ignoreChanges": [
+      "*.md"
+    ],
+    "message": "chore(release): publish %s"
   }
 }

@@ -1,13 +1,11 @@
 {
 	"name": "@parser-generator/definition",
-	"version": "0.0.0",
+	"version": "0.0.1-alpha.0",
 	"scripts": {
 		"compile": "babel --extensions \".ts\" --copy-files --root-mode upward",
-
 		"prebuild": "rimraf rm lib",
 		"build": "tsc --emitDeclarationOnly && yarn run compile src --out-dir lib",
-		"postbuild":"rimraf rm lib/__tests__",
-
+		"postbuild": "rimraf rm lib/__tests__",
 		"test": "echo 'skip test'"
 	},
 	"dependencies": {

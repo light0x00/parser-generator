@@ -1,20 +1,18 @@
 {
 	"name": "@parser-generator/grammar-interpreter",
-	"version": "0.0.0",
+	"version": "0.0.1-alpha.0",
 	"scripts": {
 		"compile": "babel --extensions \".ts\" --copy-files --root-mode upward",
-
 		"prebuild": "rimraf rm lib",
 		"build": "tsc --emitDeclarationOnly && yarn run compile src --out-dir lib",
-		"postbuild":"rimraf rm lib/__tests__",
-
+		"postbuild": "rimraf rm lib/__tests__",
 		"pretest": "yarn run compile src --out-dir lib",
 		"test": "nyc mocha lib/__tests__/**/*.test.js",
 		"posttest": "nyc report --reporter=json"
 	},
 	"dependencies": {
 		"@light0x00/shim": "^0.0.2",
-		"@parser-generator/core": "0.0.0"
+		"@parser-generator/core": "^0.0.1-alpha.0"
 	},
 	"devDependencies": {
 		"@types/require-from-string": "^1.2.0",
