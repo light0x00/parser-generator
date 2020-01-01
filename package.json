@@ -4,7 +4,9 @@
 	"scripts": {
 		"test": "lerna exec -- yarn run test",
 		"build": "tsc -b --clean && lerna run --stream --sort build",
-		"codecov": "codecov -f packages/*/coverage/*.json"
+		"codecov": "codecov -f packages/*/coverage/*.json",
+		"prerelease": "lerna version  --conventional-commits --conventional-prerelease",
+		"release": "lerna version  --conventional-commits"
 	},
 	"workspaces": [
 		"packages/*"
