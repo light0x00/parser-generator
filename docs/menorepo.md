@@ -120,6 +120,14 @@ lerna publish from-git # explicitly publish packages tagged in current commit
 lerna publish from-package # explicitly publish packages where the latest version is not present in the registry
 ```
 
+## 注意事项
+
+`lerna [xx]` 将会执行根package.json和每一个子模块的package.json的名为`xx`的script,
+
+假如某一个package.json包含一个`"script": "lerna version"`, 然后在根目录执行`lerna version`,将会导致version命令执行两次,最后互相影响,发生异常` Working tree has uncommitted changes, please commit or remove the following changes before continuing:`
+
+因此,不建议在npm script中包含与lerna重名的命令
+
 > [官方文档](https://github.com/lerna/lerna/tree/master/commands/publish#readme)
 
 # lint
