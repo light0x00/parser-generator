@@ -897,7 +897,7 @@ export class TSCodegenVisitor implements IVisitor {
 		for (let { symToken: symbol, action } of node.rawBody) {
 			let symbolStr = symbol.tag == Tag.STRING ? `"${symbol.value}"` : symbol.value;
 			let actionStr = (action == undefined ? "" : "," + action.value);
-			code += `\nnew ${SymbolWrapper.name}(${symbolStr}${actionStr}),`;
+			code += `\n\tnew ${SymbolWrapper.name}(${symbolStr}${actionStr}),`;
 		}
 		code = code.replace(/,$/, "");
 		code += "]";
@@ -928,9 +928,9 @@ export class TSCodegenVisitor implements IVisitor {
 
 export type ParserType = "LL" | "SLR" | "LR1" | "LALR";
 export type LangType = "TS" | "JS";
-export type ParserGenConfig = { rawGrammar: string, parser: ParserType, lang: LangType }
+export type ParserGenConfig = { parser: ParserType, lang: LangType }
 
-export function genParser({ rawGrammar, parser, lang }: ParserGenConfig) {
+export function genParser(rawGrammar : string,{ parser, lang }: ParserGenConfig) {
 	let pragram = parse(new GrammarLexer(rawGrammar));
 	//1. 拿到grammar对象
 	let evalVisitor = new EvalVisitor({ parser });

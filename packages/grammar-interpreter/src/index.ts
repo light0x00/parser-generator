@@ -1,1 +1,1 @@
-export { genParser } from "./inter";
+export { genParser,LangType,ParserGenConfig,ParserType } from "./inter";

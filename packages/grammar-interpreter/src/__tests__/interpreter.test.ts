@@ -1,6 +1,6 @@
 import should from "should";
-import { GrammarLexer, parse, ProgramNode, TSCodegenVisitor, EvalVisitor, genParser } from "../src/inter";
-import { FirstCalculator, FollowCalculator, getLR1ParsingTable, parseGrammar } from "@parser-generator/core";
+import { GrammarLexer, parse, ProgramNode, TSCodegenVisitor, EvalVisitor } from "../inter";
+import { FirstCalculator, FollowCalculator, getLR1ParsingTable } from "@parser-generator/core";
 import { IGrammar, AugmentedGrammar } from "@parser-generator/definition";
 
 describe(`Grammar Interpreter Test`, function () {
@@ -93,9 +93,4 @@ describe(`Grammar Interpreter Test`, function () {
 		});
 	});
 
-	describe(`Generate Parser Intergration Test`, function () {
-		should.doesNotThrow(function () {
-			genParser({ rawGrammar, parser: "SLR", lang: "TS" });
-		});
-	});
 });
