@@ -1,4 +1,4 @@
-import vis from "vis-network";
+import {Network} from "vis-network";
 
 var x = JSON.parse(document.getElementById("automataJson").innerHTML);
 var container = document.getElementById("mynetwork");
@@ -12,14 +12,9 @@ var options = {
 			size: 14,
 			background: "white",
 		},
-		widthConstraint: {
-			// maximum: 90
-		},
 		arrows: { to: true },
 		smooth: {
 			type: "continuous"
-			// "type": "discrete",
-			// "forceDirection": "none",
 		}
 	},
 	nodes: {
@@ -31,11 +26,10 @@ var options = {
 		color: "#d3dce6",
 		font: {
 			align: "left",
-			// size:'16'
 		}
 	},
 	physics: {
 		enabled: false
 	}
 };
-var network = new vis.Network(container, data, options);
+var network = new Network(container, data, options);

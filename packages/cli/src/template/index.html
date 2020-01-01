@@ -17,7 +17,7 @@
 	}
 
 	#mynetwork {
-		width: 100%;
+		width: 90%;
 		height: 2000px;
 		border: 1px solid lightgray;
 	}
@@ -39,8 +39,8 @@
 		</tr>
 		<% } %>
 	</table>
-	<!-- First 集 -->
 	<% if(first!=undefined){ %>
+	<!-- First 集 -->
 	<h1>First Set</h1>
 	<table>
 		<% for (var i=0; i<first.length; i++){ %>
@@ -52,8 +52,8 @@
 		<% }; %>
 	</table>
 	<% } %>
-	<!-- Follow 集 -->
 	<% if(follow!=undefined){ %>
+	<!-- Follow 集 -->
 	<h1>Follow Set</h1>
 	<table>
 		<% for (var i=0; i< follow.length; i++){ %>
@@ -65,8 +65,8 @@
 		<% }; %>
 	</table>
 	<% } %>
-	<!-- LR 分析表 -->
 	<% if(lrTable!=undefined){ %>
+	<!-- LR 分析表 -->
 	<h1>LR Parsing Table</h1>
 	<table>
 		<% for (var i=0; i< lrTable.length; i++){ %>
@@ -78,8 +78,9 @@
 		<% }; %>
 	</table>
 	<% } %>
-	<!-- LR 自动机 -->
 	<% if(lrAutomata!=undefined){ %>
+	<h1>LR Automata</h1>
+	<!-- LR 自动机 -->
 	<div id="mynetwork"></div>
 	<script id="automataJson" type="application/json">
 		<%= lrAutomata %>

@@ -1,9 +1,6 @@
 import { ParsingTable, SSymbol, isNonTerminal, Terminal } from "@parser-generator/definition";
 import { StateSet, FollowTable, FirstTable } from "@parser-generator/core";
-/**
- * 转换LR分析表为二维数组
- * @param parsingTable
- */
+
 export function lrTableToDimArr(parsingTable: ParsingTable): string[][] {
 	let table = new Array<Array<string>>();
 	let cols = new Set<SSymbol>();
@@ -37,10 +34,9 @@ export function lrAutomataToGraph(stateSet: StateSet) {
 	for (let state of stateSet) {
 		nodes.push({
 			id: state.id,
-			// heightConstraint: { minimum: 100, valign: "top" },
 			label: `${state.toString()}`,
-			x: (count % size * 250),
-			y: count / size * 250
+			x: count % size * 250,
+			y: Math.floor(count / size) * 250
 		});
 
 		for (let [label, to] of state.mapping) {
@@ -97,7 +93,7 @@ export function firstTableToDimArr(firstTable: FirstTable): string[][] {
 		row.push(k + "");
 		for (let token of tokens) {
 			if (v.has(token))
-				row.push(`${v.get(token)}`);
+				row.push(v.get(token)!.id+"");
 			else
 				row.push("");
 		}
