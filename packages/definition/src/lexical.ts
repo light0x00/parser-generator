@@ -17,7 +17,7 @@ export interface ILexer {
 
 export type TokenPatterns<T> = Array<{ regexp: RegExp, type: T }>
 
-export abstract class AbstractRegexpLexer<T, A> {
+export abstract class CommonAbstractRegexpLexer<T, A>{
 
 	private patterns: TokenPatterns<A>;
 	private lastIndex = 0
@@ -106,6 +106,6 @@ export abstract class AbstractRegexpLexer<T, A> {
 	protected abstract getEOF(): T
 }
 
-export abstract class AbstractRegexpLexer2<T extends IToken, A> extends AbstractRegexpLexer<T, A>{
+export abstract class AbstractRegexpLexer<T extends IToken, A> extends CommonAbstractRegexpLexer<T, A> implements ILexer {
 
 }

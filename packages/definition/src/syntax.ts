@@ -69,7 +69,7 @@ export const NIL = new TokenPro("NIL");
 export const EOF = new TokenPro("EOF");
 
 export type SSymbol = string | NonTerminal | TokenPro;
-export type Terminal = TokenPro | string;
+export type Terminal = TokenPro | string;  //还应该包含一些基础类型 所以还是设置为 Object最好
 
 export function isNonTerminal(sym: Object): sym is NonTerminal {
 	return sym instanceof NonTerminal;
@@ -270,7 +270,7 @@ export class Grammar implements IGrammar {
 
 export class AugmentedGrammar extends Grammar {
 	protected validate() {
-		assert(this.startSym.prods.length == 1, `The start symbol of an augmented grammar has one and only one production! but ${this.startSym} has ${this.startSym.prods.length}`);
+		assert(this.startSym.prods.length == 1, `The start symbol of an augmented grammar has one and only one production! but ${this.startSym} has ${this.startSym.prods.length}:\n${this.startSym.prods.join("\n")}`);
 	}
 }
 
