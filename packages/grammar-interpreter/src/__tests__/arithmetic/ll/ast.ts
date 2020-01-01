@@ -1,5 +1,5 @@
 import { ASTree, ASTElement } from "@parser-generator/definition";
-import { Token, Num, Single } from "../lexer";
+import {  Num, Single } from "../lexer";
 
 class ASTList implements ASTree {
 

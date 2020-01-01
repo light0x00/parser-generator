@@ -881,7 +881,6 @@ export class TSCodegenVisitor implements IVisitor {
 				}
 			}
 		}
-
 	}
 	visitTokenProNode(node: TokenProNode): void {
 		this.emitln(`export let ${node.varName} = new ${TokenPro.name}("${node.varName}");`);

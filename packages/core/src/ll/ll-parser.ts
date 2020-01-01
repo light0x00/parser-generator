@@ -130,12 +130,6 @@ export class LLParser {
 
 }
 
-// export function buildLLParser(grammar: IGrammar) {
-// 	let firstSetCalculator = new FirstCalculator(grammar);
-// 	let follow = new FollowCalculator(grammar, firstSetCalculator);
-// 	return new LLParser(grammar.startNT(), firstSetCalculator.getFirstTable(), follow.getFollowTable());
-// }
-
 /*
 
 1. 二义性

@@ -1,4 +1,3 @@
-import { IToken } from "@parser-generator/definition";
 import { isIterable } from "@light0x00/shim";
 
 export class CyclicDepsDector<T> {
