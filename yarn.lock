@@ -1927,6 +1927,11 @@
   resolved "https://registry.npmjs.org/@types/relateurl/-/relateurl-0.2.28.tgz#6bda7db8653fa62643f5ee69e9f69c11a392e3a6"
   integrity sha1-a9p9uGU/piZD9e5p6facEaOS46Y=
 
+"@types/require-from-string@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@types/require-from-string/-/require-from-string-1.2.0.tgz#c18cfc8a2c1a0259e5841d1fef2b5e9d01c64242"
+  integrity sha512-5vE9WoOOC9/DoD3Zj53UISpM+5tSvh8k0mL4fe2zFI6vO715/W4IQ3EdVUrWVMrFi1/NZhyMvm2iKsDFkEGddQ==
+
 "@types/semver@^6.0.1":
   version "6.2.0"
   resolved "https://registry.npmjs.org/@types/semver/-/semver-6.2.0.tgz#d688d574400d96c5b0114968705366f431831e1a"
@@ -7867,6 +7872,11 @@ require-directory@^2.1.1:
   version "2.1.1"
   resolved "https://registry.npmjs.org/require-directory/-/require-directory-2.1.1.tgz#8c64ad5fd30dab1c976e2344ffe7f792a6a6df42"
   integrity sha1-jGStX9MNqxyXbiNE/+f3kqam30I=
+
+require-from-string@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.npmjs.org/require-from-string/-/require-from-string-2.0.2.tgz#89a7fdd938261267318eafe14f9c32e598c36909"
+  integrity sha512-Xf0nWe6RseziFMu+Ap9biiUbmplq6S9/p+7w7YXP/JBHhrUDDUhwa+vANyubuqfZWTveU//DYVGsDG7RKL/vEw==
 
 require-main-filename@^1.0.1:
   version "1.0.1"

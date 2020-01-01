@@ -2,10 +2,13 @@
 	"name": "@parser-generator/definition",
 	"version": "0.0.0",
 	"scripts": {
-		"test": "echo 'skip test'",
-		"babel": "babel --extensions \".ts\" --copy-files --root-mode upward",
+		"compile": "babel --extensions \".ts\" --copy-files --root-mode upward",
+
 		"prebuild": "rimraf rm lib",
-		"build": "tsc --emitDeclarationOnly --rootDir src --outDir lib -p tsconfig.json && yarn run babel src --out-dir lib"
+		"build": "tsc --emitDeclarationOnly && yarn run compile src --out-dir lib",
+		"postbuild":"rimraf rm lib/__tests__",
+
+		"test": "echo 'skip test'"
 	},
 	"dependencies": {
 		"@light0x00/shim": "^0.0.2"

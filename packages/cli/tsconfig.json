@@ -2,16 +2,15 @@
 	"extends": "../../tsconfig",
 	"compilerOptions": {
 		"baseUrl": ".",
-		"outDir": "lib",
-		"rootDir": "src"
+		"rootDir": "src",
+		"outDir": "lib"
 	},
 	"references": [
 		{
-			"path": "../core"
+			"path": "../grammar-interpreter"
 		}
 	],
 	"include": [
 		"src"
-	],
-	"exclude": ["**/dist"]
+	]
 }

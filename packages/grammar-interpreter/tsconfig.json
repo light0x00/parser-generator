@@ -1,9 +1,16 @@
 {
 	"extends": "../../tsconfig",
 	"compilerOptions": {
-		"baseUrl": "./",
+		"baseUrl": ".",
 		"rootDir": "src",
 		"outDir": "lib"
 	},
-	"include": ["src"]
+	"include": [
+		"src"
+	],
+	"references": [
+		{
+			"path": "../core"
+		}
+	]
 }
