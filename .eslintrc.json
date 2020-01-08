@@ -1,6 +1,5 @@
 {
 	"root": true,
-	"parser": "@typescript-eslint/parser",
 	"env": {
 		"es6": true,
 		"node": true,
@@ -13,6 +12,7 @@
 	"plugins": [
 		"@typescript-eslint"
 	],
+	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"ecmaVersion": 2018,
 		"sourceType": "module"
@@ -49,7 +49,6 @@
 			}
 		],
 		"no-unused-vars": "off",
-		/* typescript误报 */
 		"@typescript-eslint/no-unused-vars": [
 			"warn",
 			{
@@ -58,12 +57,14 @@
 		],
 
 		"no-empty":"warn",
-		/* Allows the loop condition to be constant */
+		/* 运行常量作为循环条件 */
 		"no-constant-condition": [
 			"error",
 			{
 				"checkLoops": false
 			}
 		]
+
+
 	}
 }

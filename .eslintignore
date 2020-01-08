@@ -2,3 +2,4 @@ lib
 dist
 packages/cli/src/template
 *.tmp.ts
+node_modules
