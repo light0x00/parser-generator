@@ -7,6 +7,7 @@ import { IFunction } from "@light0x00/shim";
 import rootDebug from "debug";
 let debug = rootDebug("APP:LR:parsing-table");
 
+export type AllowedFollowsWhenReducing = IFunction<Item, Set<Terminal>>
 /*
 输入: 一个由「项集族」和「项集间跳转关系」组成的状态机
 输出: LR/SLR分析表
@@ -27,7 +28,7 @@ let debug = rootDebug("APP:LR:parsing-table");
  * @param startSymbol 开始符号
  * @param allowedFollowsWhenReducing 对于任意一个归约项,返回其允许的「归约展望符」(SLR/LR)
  */
-export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, allowedFollowsWhenReducing: IFunction<Item, Set<Terminal>>): ParsingTable {
+export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, allowedFollowsWhenReducing: AllowedFollowsWhenReducing): ParsingTable {
 
 	let parsingTable = new ParsingTable();
 

@@ -1,8 +1,9 @@
-import { NonTerminal, SSymbol, AugmentedGrammar } from "@parser-generator/definition";
+import { NonTerminal, SSymbol, AugmentedGrammar, Terminal } from "@parser-generator/definition";
 import { ItemSet, Item, State, AutomataTools, StateSet } from "./definition";
 import { getAutomata } from "./automata";
-import { FirstCalculator, FollowCalculator } from "../first-follow";
+import { FirstCalculator, FollowCalculator, FollowTable } from "../first-follow";
 import { getParsingTable } from "./parsing-table";
+import { IFunction } from "@light0x00/shim";
 
 export class SLRAutotamaTools implements AutomataTools {
 	/**
@@ -76,13 +77,19 @@ export class SLRAutotamaTools implements AutomataTools {
 
 
 }
+
+export type FollowSetGetter = IFunction<NonTerminal, Set<Terminal>>;
+
 export function getSLRAutomata(grammar: AugmentedGrammar) {
 	return getAutomata(grammar, new SLRAutotamaTools());
 }
-export function getSLRParsingTable(grammar: AugmentedGrammar, automata?: StateSet, fol?: FollowCalculator) {
+export function getSLRParsingTable(grammar: AugmentedGrammar, automata?: StateSet, fol?: FollowSetGetter) {
 	if (automata == undefined)
 		automata = getSLRAutomata(grammar);
-	if (fol == undefined)
-		fol = new FollowCalculator(grammar, new FirstCalculator(grammar));
-	return getParsingTable(automata!, grammar.startNT(), (i) => fol!.getFollowSet(i.prod.head));
+
+	if (fol == undefined) {
+		let foll = new FollowCalculator(grammar, new FirstCalculator(grammar));
+		fol = (i: NonTerminal) => foll.getFollowSet(i);
+	}
+	return getParsingTable(automata!, grammar.startNT(), (i) => fol!(i.prod.head));
 }

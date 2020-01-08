@@ -3,12 +3,12 @@ import { Terminal, SSymbol, NonTerminal, NIL, Production, AugmentedGrammar, EOF 
 import { AutomataTools, ItemSet, Item, State, StateSet } from "./definition";
 
 import _debug from "debug";
-import { FirstCalculator } from "../first-follow";
+import { FirstCalculator, FirstTable } from "../first-follow";
 import { getAutomata } from "./automata";
 import { getParsingTable } from "./parsing-table";
 let debug = _debug("PG:LR1");
 
-type FirstSetGetter = IFunction<SSymbol, Set<Terminal>>;
+export type FirstSetGetter = IFunction<SSymbol, Set<Terminal>>;
 
 /* 构造自动机所需要的方法 */
 export class LR1AutomataTools implements AutomataTools {
@@ -199,9 +199,12 @@ export class LR1AutomataTools implements AutomataTools {
 	}
 }
 
-export function getLR1Automata(grammar: AugmentedGrammar) {
-	let fir = new FirstCalculator(grammar);
-	return getAutomata(grammar, new LR1AutomataTools((i) => fir.getFirstSet(i)));
+export function getLR1Automata(grammar: AugmentedGrammar, fristGetter?: FirstSetGetter) {
+	if (fristGetter == undefined) {
+		let firstCalculator = new FirstCalculator(grammar);
+		fristGetter = (i: SSymbol) => firstCalculator.getFirstSet(i);
+	}
+	return getAutomata(grammar, new LR1AutomataTools(fristGetter));
 }
 
 export function getLR1ParsingTable(grammar: AugmentedGrammar, autotama?: StateSet) {

@@ -27,6 +27,7 @@ export abstract class CommonAbstractRegexpLexer<T, A>{
 	private buffer = new Queue<T>();
 
 	constructor(text: string, patterns: TokenPatterns<A>) {
+		assert(text!=undefined);
 		this.text = text;
 		this.patterns = patterns;
 	}

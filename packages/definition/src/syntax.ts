@@ -151,13 +151,14 @@ export class Production {
 		return this._preAction;
 	}
 	get postAction() {
-		assert(this._postAction != undefined, "post action is required for Parser");
-		return this._postAction;
+		if (this._postAction == undefined)
+			console.warn(`production(${this.id}) doesn't have post action, it is required for Parser`);
+		return this._postAction!; //TODO
 	}
-	get action(){
+	get action() {
 		return this.postAction;
 	}
-	get prec() { return this._prec;}
+	get prec() { return this._prec; }
 	set prec(val) {
 		this._prec = val;
 	}
@@ -301,7 +302,7 @@ export class Shift extends Operation {
 		this._nextStateId = nextStateId;
 	}
 
-	get nextStateId(){
+	get nextStateId() {
 		return this._nextStateId;
 	}
 
@@ -322,7 +323,7 @@ export class Goto extends Operation {
 		super();
 		this._nextStateId = nextStateId;
 	}
-	get nextStateId(){
+	get nextStateId() {
 		return this._nextStateId;
 	}
 	toString() {
@@ -344,7 +345,7 @@ export class Reduce extends Operation {
 		super();
 		this._prod = prod;
 	}
-	get prod(){
+	get prod() {
 		return this._prod;
 	}
 	toString() {

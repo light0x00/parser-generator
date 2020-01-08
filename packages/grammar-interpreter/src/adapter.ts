@@ -30,7 +30,7 @@ export function lrAutomataToGraph(stateSet: StateSet) {
 	let nodes = [];
 	let edges = [];
 	let count = 0;
-	let size = parseInt(Math.sqrt(stateSet.length).toString());
+	let size = Math.round(Math.sqrt(stateSet.length));
 	for (let state of stateSet) {
 		nodes.push({
 			id: state.id,

@@ -1,7 +1,12 @@
-import { NonTerminal, Production, TokenPro, AbstractRegexpLexer, NIL, IGrammar, AugmentedGrammar, SymbolWrapper, SSymbol, SymbolTrait, Grammar, EOF, ParsingTable, Shift, Accept, Goto, Reduce, SymbolTraits } from "@parser-generator/definition";
+import { NonTerminal, Production, TokenPro, NIL, IGrammar, AugmentedGrammar, SymbolWrapper, SSymbol, SymbolTrait, Grammar, EOF, ParsingTable, Shift, Accept, Goto, Reduce, SymbolTraits } from "@parser-generator/definition";
 import { assert } from "@light0x00/shim";
-import { cloneDeep, groupBy, Dictionary } from "lodash";
+// import { cloneDeep, groupBy ,Dictionary} from "lodash";
+import cloneDeep from "lodash/cloneDeep";
+import groupBy from "lodash/groupBy";
+
 import { FirstTable, FollowTable, LLParser, LRParser, FollowCalculator, FirstCalculator, getSLRAutomata, getSLRParsingTable, getLR1Automata, getLR1ParsingTable } from "@parser-generator/core";
+import { CommonAbstractRegexpLexer } from "@parser-generator/definition";
+// import {  } from "@parser-generator/definition";
 
 /*************************************** Lexical Analysis  ****************************************/
 
@@ -71,7 +76,7 @@ class Number extends Token {
 	}
 }
 
-export class GrammarLexer extends AbstractRegexpLexer<Token, Tag>{
+export class GrammarLexer extends CommonAbstractRegexpLexer<Token, Tag>{
 
 	private lineNo = 1;
 	private colNo = 0;
@@ -295,7 +300,8 @@ class GrammarNode extends ASTree {
 	//属性
 	nts: NonTerminal[] = []
 	startSym!: NonTerminal;
-	prodNodeGroups: Dictionary<ProductionNode[]>
+	prodNodeGroups: any /* @SHIT lodash-es https://github.com/lodash/lodash/issues/4609 */
+	// Directory <ProductionNode[]>
 
 	constructor(tNodes: TokenProNode[], ntNodes: NonTerminalNode[], prodNodes: ProductionNode[]) {
 		super();
@@ -438,7 +444,7 @@ class NonTerminalNode extends ASTree {
 				break;
 		}
 		if (defaultPostAction == undefined)
-			console.error(`nonterminal ${this.varName} don't have post-action,it's required for parser!`);
+			console.warn(`The nonterminal "${this.varName}" doesn't have post-action,it's required for parser!`);
 		// assert(defaultPostAction != undefined, `productions of nonterminal ${this.name} should have at least one post action`);
 		for (let p of prods) {
 			if (p.preAction == undefined)
@@ -929,7 +935,7 @@ export type ParserType = "LL" | "SLR" | "LR1" | "LALR";
 export type LangType = "TS" | "JS";
 export type ParserGenConfig = { parser: ParserType, lang: LangType }
 
-export function genParser(rawGrammar : string,{ parser, lang }: ParserGenConfig) {
+export function genParser(rawGrammar: string, { parser = "LR1", lang = "TS" }: ParserGenConfig) {
 	let pragram = parse(new GrammarLexer(rawGrammar));
 	//1. 拿到grammar对象
 	let evalVisitor = new EvalVisitor({ parser });
@@ -937,18 +943,24 @@ export function genParser(rawGrammar : string,{ parser, lang }: ParserGenConfig)
 	let grammar = evalVisitor.grammar;
 	//2. 拿到分析表
 	let firstTable, followTable, lrTable, lrAutomata;
+
+	//2.1 first
+	let fir = new FirstCalculator(grammar);
+	firstTable = fir.getFirstTable();
+	//2.2 follow
+	let fol = new FollowCalculator(grammar, fir);
+	followTable = fol.getFollowTable();
+
 	if (parser == "LL") {
-		let fir = new FirstCalculator(grammar);
-		firstTable = fir.getFirstTable();
-		let fol = new FollowCalculator(grammar, fir);
-		followTable = fol.getFollowTable();
+		//for nothing
 	} else {
+		//2.3 automata & parsing table
 		assert(grammar instanceof AugmentedGrammar);
 		if (parser == "SLR") {
 			lrAutomata = getSLRAutomata(grammar);
-			lrTable = getSLRParsingTable(grammar, lrAutomata);
+			lrTable = getSLRParsingTable(grammar, lrAutomata, (i) => fol.getFollowSet(i));
 		} else if (parser == "LR1") {
-			lrAutomata = getLR1Automata(grammar);
+			lrAutomata = getLR1Automata(grammar, (i) => fir.getFirstSet(i));
 			lrTable = getLR1ParsingTable(grammar, lrAutomata);
 		} else if (parser == "LALR") {
 			throw new Error("LALR parsing table is unimplemented!");

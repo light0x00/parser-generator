@@ -2,8 +2,7 @@ import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import fs from "fs";
 import path from "path";
-import { genParser, LangType, ParserType } from "@parser-generator/grammar-interpreter";
-import { followTableToDimArr, firstTableToDimArr, lrTableToDimArr, lrAutomataToGraph } from "./adapter";
+import { genParser, LangType, ParserType ,adapter} from "@parser-generator/grammar-interpreter";
 
 export type CodegenConfig = { parser: ParserType, lang: LangType, outputDir: string, file: string }
 
@@ -24,13 +23,13 @@ export function codegen({ parser, lang, outputDir, file }: CodegenConfig) {
 	//2.生成模版
 	let tmplData: any = { prods: grammar.productions(), first: undefined, follow: undefined, lrTable: undefined, lrAutomata: undefined };
 	if (firstTable != undefined)
-		tmplData.first = firstTableToDimArr(firstTable);
+		tmplData.first = adapter.firstTableToDimArr(firstTable);
 	if (followTable != undefined)
-		tmplData.follow = followTableToDimArr(followTable);
+		tmplData.follow = adapter.followTableToDimArr(followTable);
 	if (lrTable != undefined)
-		tmplData.lrTable = lrTableToDimArr(lrTable);
+		tmplData.lrTable = adapter.lrTableToDimArr(lrTable);
 	if (lrAutomata != undefined)
-		tmplData.lrAutomata = JSON.stringify(lrAutomataToGraph(lrAutomata));
+		tmplData.lrAutomata = JSON.stringify(adapter.lrAutomataToGraph(lrAutomata));
 	let entry = parser == "LL" ? LL_ENTRY_PATH : LR_ENTRY_PATH;
 	webpack({
 		mode: "production",
@@ -42,7 +41,10 @@ export function codegen({ parser, lang, outputDir, file }: CodegenConfig) {
 				inject: true,
 				templateParameters: tmplData,
 				template: TEMPLATE_PATH,
-			})
+			}),
+			new webpack.BannerPlugin(`Copyright (c) 2019 light
+			Licensed under the MIT License (MIT), see
+			https://github.com/light0x00/parser-generator`),
 		]
 	}, (err, stats) => {
 		if (err) {
