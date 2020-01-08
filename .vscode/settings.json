@@ -1,14 +1,27 @@
 {
 	"typescript.tsdk": "node_modules/typescript/lib",
+	"files.autoSave": "off",
 	"files.associations": {
-		"eslint.json": "jsonc"
+		"eslint.json": "jsonc",
+		"babel*.json": "jsonc",
 	},
+	/* eslint */
 	"eslint.validate": [
 		"javascript",
 		"typescript",
+		"vue"
 	],
+	/* hidden files */
 	"files.exclude": {
-		"**/lib":false,
-		"**/dist":false
-	}
+		"**/lib": false,
+		"**/dist": false,
+		"packages/*/coverage": true,
+		"packages/*/.nyc_output": true
+	},
+	/* auto fix lint */
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	/* use eslint-vue instead of vetur */
+	"vetur.validation.template": false
 }

@@ -21,7 +21,6 @@
 			],
 			"env": {
 				"DEBUG": "PG:*",
-				"TS_NODE_PROJECT": "packages/core/tsconfig.json"
 			},
 			"console": "integratedTerminal",
 			"protocol": "inspector",
@@ -46,17 +45,19 @@
 			"console": "integratedTerminal",
 			"protocol": "inspector",
 		},
-	],
-	//https://code.visualstudio.com/docs/editor/variables-reference#_input-variables
-	"inputs": [
 		{
-			"type": "pickString",
-			"id": "pickTsConfig",
-			"description": "Where is the tsconfig?",
-			"options": [
-				"packages/core/tsconfig.json",
+            "name": "DEBUG NODE ES",
+            "type": "node",
+			"request": "launch",
+			"runtimeArgs": [
+				"-r",
+				"esm"
 			],
-			"default": "packages/parser"
-		}
+			"args": [
+				"${file}",
+			],
+			"console": "integratedTerminal"
+        }
+
 	],
 }
