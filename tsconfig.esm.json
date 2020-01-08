@@ -1,0 +1,10 @@
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"module": "ESNext",
+		"composite": false,
+		"declaration": false,
+		"declarationMap": false
+	},
+	"include": []
+}

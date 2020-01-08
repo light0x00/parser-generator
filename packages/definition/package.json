@@ -2,18 +2,31 @@
 	"name": "@parser-generator/definition",
 	"version": "0.0.1-alpha.0",
 	"scripts": {
-		"compile": "babel --extensions \".ts\" --copy-files --root-mode upward",
+		"2prebuild": "rimraf rm lib",
+		"2build": "tsc --emitDeclarationOnly && yarn run compile src --outDir lib",
+		"test": "echo 'skip test'",
+
+		"compile": "babel --extensions \".ts\" --copy-files",
 		"prebuild": "rimraf rm lib",
-		"build": "tsc --emitDeclarationOnly && yarn run compile src --out-dir lib",
-		"postbuild": "rimraf rm lib/__tests__",
-		"test": "echo 'skip test'"
+
+		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
+		"build:types": "tsc --emitDeclarationOnly --baseUrl ./src --rootDir src --outDir lib/types",
+
+		"build:cjs": "yarn run compile src --out-dir lib/cjs --config-file ../../babel-cjs.json",
+		"build:esm": "yarn run compile src --out-dir lib/esm --config-file ../../babel-esm.json",
+		"postbuild": "rimraf rm lib/*/__tests__"
 	},
 	"dependencies": {
-		"@light0x00/shim": "^0.0.2"
+		"@babel/runtime-corejs3": "^7.7.7",
+		"@light0x00/shim": "^0.0.2",
+		"core-js": "^3.6.2"
 	},
-	"main": "lib/index.js",
+	"main": "lib/cjs/index.js",
+	"module": "lib/esm/index.js",
+	"types": "lib/types/index.d.ts",
 	"files": [
-		"lib"
+		"lib",
+		"src"
 	],
 	"contributors": [
 		"Chen Yang <light0x00@163.com> (https://github.com/light0x00)"

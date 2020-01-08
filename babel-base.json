@@ -1,21 +1,5 @@
 {
-	"env": {
-		"production":{
-			"ignore": ["__test__"]
-		}
-	},
-	"presets": [
-		[
-			"@babel/env",
-			{
-				"targets": {
-					"node": "8.12.0"
-				},
-				"spec": false,
-				"modules": "commonjs",
-				"debug": false
-			}
-		],
+	"presets":[
 		[
 			"@babel/preset-typescript",
 			{
@@ -29,6 +13,7 @@
 		"@babel/proposal-object-rest-spread",
 		"@babel/plugin-proposal-optional-chaining",
 		"@babel/plugin-transform-named-capturing-groups-regex",
+		"@babel/plugin-syntax-dynamic-import",
 		[
 			"module-resolver",
 			{
@@ -42,6 +27,5 @@
 			}
 		]
 	],
-	"sourceMaps": "inline",
-	"ignore": []
+	"sourceMaps": "inline"
 }

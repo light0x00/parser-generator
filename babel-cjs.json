@@ -1,0 +1,6 @@
+{
+	"extends": "./babel-base.json",
+	"plugins":[
+		"@babel/plugin-transform-modules-commonjs"
+	]
+}

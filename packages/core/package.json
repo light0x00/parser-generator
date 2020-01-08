@@ -2,25 +2,29 @@
 	"name": "@parser-generator/core",
 	"version": "0.0.1-alpha.0",
 	"scripts": {
-		"compile": "babel --extensions \".ts\" --copy-files --root-mode upward",
+		"pretest": "rimraf rm lib && yarn run build:cjs",
+		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
+		"posttest": "nyc report --reporter=json",
+
+		"compile": "babel --extensions \".ts\" --copy-files",
 		"prebuild": "rimraf rm lib",
-		"build": "tsc --emitDeclarationOnly && yarn run compile src --out-dir lib",
-		"postbuild": "rimraf rm lib/__tests__",
-		"pretest": "yarn run compile src --out-dir lib",
-		"test": "nyc mocha lib/__tests__/**/*.test.js",
-		"posttest": "nyc report --reporter=json"
+		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
+		"build:types": "tsc --emitDeclarationOnly --baseUrl ./src --rootDir src --outDir lib/types",
+		"build:cjs": "yarn run compile src --out-dir lib/cjs --config-file ../../babel-cjs.json",
+		"build:esm": "yarn run compile src --out-dir lib/esm --config-file ../../babel-esm.json",
+		"postbuild": "rimraf rm lib/*/__tests__ lib/tsconfig.tsbuildinfo"
 	},
 	"dependencies": {
+		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/definition": "^0.0.1-alpha.0",
 		"@types/debug": "^4.1.5",
-		"debug": "^4.1.1",
-		"lodash": "^4.17.15"
+		"debug": "^4.1.1"
 	},
-	"devDependencies": {
-		"@types/lodash": "^4.14.149"
-	},
-	"main": "lib/index.js",
+	"devDependencies": {},
+	"main": "lib/cjs/index.js",
+	"module": "lib/esm/index.js",
+	"types": "lib/types/index.d.ts",
 	"files": [
 		"lib"
 	],
