@@ -1,0 +1,42 @@
+{
+	/* extends root config */
+	"root": false,
+	"extends": [
+		"plugin:vue/recommended"
+	],
+	"plugins": [],
+	"parser": "vue-eslint-parser",
+	"parserOptions": {
+		"parser": "@typescript-eslint/parser"
+	},
+	"rules": {
+		/* vue lint https://github.com/vuejs/eslint-plugin-vue/tree/master/docs/rules */
+		"vue/max-attributes-per-line": [
+			"error",
+			{
+				"singleline": 5,
+				"multiline": {
+					"max": 5,
+					"allowFirstLine": true
+				}
+			}
+		],
+		"vue/singleline-html-element-content-newline": [
+			"off"
+		],
+		"vue/name-property-casing": [
+			"off"
+		],
+		"vue/require-prop-types": [
+			"off"
+		],
+		"vue/no-v-html":[
+			"off"
+		],
+		"vue/multiline-html-element-content-newline":[
+			"off"
+		],
+		"vue/valid-template-root":["off"],
+		"vue/html-self-closing":["off"]
+	}
+}

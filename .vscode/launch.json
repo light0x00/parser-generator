@@ -57,7 +57,27 @@
 				"${file}",
 			],
 			"console": "integratedTerminal"
-        }
+		},
+		{
+			"name": "Debug Webpack Dev Server",
+			"type": "node",
+			"request": "launch",
+			"program": "${workspaceRoot}/node_modules/.bin/webpack-dev-server",
+			"args": [
+				"--project",
+				"--config",
+				"${file}",
+			],
+			"env": {
+				// "NODE_ENV": "development",
+			},
+			"cwd": "${fileDirname}",
+			"runtimeArgs": [
+				"-r",
+				"esm"
+			],
+			"console": "integratedTerminal"
+		},
 
 	],
 }

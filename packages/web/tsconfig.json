@@ -1,0 +1,20 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"~/*": [
+				"src/*"
+			]
+		},
+		"typeRoots": ["./types","./node_modules/@types"],
+		// "noEmit": true
+	},
+	"exclude": ["node_modules"],
+	"include": [
+		"src/**/*.vue",
+		"src/**/*.js",
+		"src/**/*.ts",
+		"types/**/*.d.ts"
+	]
+}
