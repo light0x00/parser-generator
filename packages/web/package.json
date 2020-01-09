@@ -5,8 +5,7 @@
 		"test": "echo 'skip test'",
 		"start": "node -r esm node_modules/.bin/webpack-dev-server --config webpack.config.dev.js --progress",
 		"build:dev": "node -r esm node_modules/.bin/webpack --config webpack.config.dev.js --progress",
-		"build": "echo 'skip build'",
-		"build:prod": "node -r esm node_modules/.bin/webpack --config webpack.config.prod.js --progress"
+		"build": "node -r esm node_modules/.bin/webpack --config webpack.config.prod.js --progress"
 	},
 	"dependencies": {
 		"@babel/runtime": "^7.7.7",

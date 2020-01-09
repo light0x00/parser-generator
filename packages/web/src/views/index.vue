@@ -52,7 +52,7 @@ export default {
     align-items: center;
 }
 .content-container {
-    overflow: auto;
+    overflow: hidden;
 }
 
 @media (min-width: 2000px) {

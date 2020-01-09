@@ -1,6 +1,6 @@
 /* element-ui按需导入 */
 import {Alert, Button, Select,Option ,Input,Row} from "element-ui";
-
+import(/* webpackPrefetch:true,webpackChunkName:'ui-font' */ "element-ui/lib/theme-chalk/base");/* element 字体文件不必加载的过早 */
 export default {
 	install(Vue) {
 		Vue.component(Alert.name, Alert);

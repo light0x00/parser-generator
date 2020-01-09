@@ -1,10 +1,12 @@
 <template>
-  <table>
-    <slot name="head" />
-    <tr v-for="(row,rowIndex) of data" :key="rowIndex">
-      <td v-for="(cell,cellIndex) of row " :key="cellIndex">{{ cell }}</td>
-    </tr>
-  </table>
+  <div style="width:100%;overflow:auto">
+    <table>
+      <slot name="head" />
+      <tr v-for="(row,rowIndex) of data" :key="rowIndex">
+        <td v-for="(cell,cellIndex) of row " :key="cellIndex">{{ cell }}</td>
+      </tr>
+    </table>
+  </div>
 </template>
 
 <script>

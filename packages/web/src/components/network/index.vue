@@ -1,5 +1,5 @@
 <template>
-  <div style="width:100%;height:100%;border:1px solid #e1e4e8;background-color:white">
+  <div>
     <div style="height:30px">
       <el-button circle class="el-icon-rank" @click="fit" />
       <el-button v-show="!isFullScreen" circle class="el-icon-full-screen" @click="fullScreen" />
@@ -64,6 +64,12 @@ export default Vue.extend({
 		this.$once("hook:destroyed",()=>{
 			this.network.destroy();
 		});
+		// const thisRef = this;
+		this.$el.addEventListener("fullscreenchange", (e)=>{
+			// console.log(e,this,thisRef.webkitIsFullScreen,document.fullscreenElement);
+			this.isFullScreen = document.fullscreenElement!=null;
+
+		},false);
 
 	},
 	methods:{

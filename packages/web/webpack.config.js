@@ -3,7 +3,9 @@ import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import VueLoaderPlugin from "vue-loader/lib/plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
+/*
 
+*/
 const ROOT = __dirname;
 const ASSETS_PATHS = {
 	js: "static/js/[name].[hash:8].js",
@@ -76,7 +78,7 @@ export default {
 			template: resolve("src/index.html"),
 			filename: `index.html`,
 			chunks: ["main", "vendors", "ui", "default", "runtime"],
-			// favicon: resolve("public/favicon.ico"),
+			favicon: resolve("public/favicon.ico"),
 		}),
 		new BundleAnalyzerPlugin({
 			analyzerMode: "static",
@@ -102,20 +104,22 @@ export default {
 			cacheGroups: {
 				/* ui库单独打包 */
 				element_ui: {
+					chunks: "initial",
 					test: /[\\/]node_modules[\\/]_?element-ui(.*)/,
 					name: "ui",
-					priority: 20,
+					// priority: 20,
 				},
 				element_css: {
+					chunks: "initial",
 					test: /src\/styles\/element-ui-theme/,
 					name: "ui",
-					priority: 20,
+					// priority: 20,
 				},
 				/* 同步的第三方库 */
 				vendors: {
 					chunks: "initial",
 					test: /[\\/]node_modules[\\/]/,
-					priority: 17,
+					// priority: 17,
 					name: "vendors",
 				},
 			}

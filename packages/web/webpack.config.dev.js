@@ -11,7 +11,7 @@ export default merge(baseConfig, {
 		publicPath: "/",
 	},
 	devServer: {
-		contentBase: [resolve("public/"),resolve("dist/")],
+		contentBase: [resolve("public/")],
 		host: "localhost",
 		port: 4092,
 		index: "index.html",

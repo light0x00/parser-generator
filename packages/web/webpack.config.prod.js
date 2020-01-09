@@ -5,10 +5,12 @@ import {CleanWebpackPlugin} from "clean-webpack-plugin";
 import merge from "webpack-merge";
 import baseConfig from "./webpack.config";
 
+const CONTEX_PATH = "/parser-generator/";
+
 export default merge(baseConfig,{
 	mode: "production",
 	output: {
-		publicPath: "/",
+		publicPath: CONTEX_PATH,
 	},
 	devtool: false,
 	// devtool: "nosources-source-map",
