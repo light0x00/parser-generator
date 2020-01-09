@@ -21,7 +21,8 @@
 		}
 	},
 	"lint-staged": {
-		"packages/**": "eslint"
+		"packages/**/*.ts": "yarn eslint",
+		"packages/**/*.js": "yarn eslint"
 	},
 	"commitlint": {
 		"extends": [
