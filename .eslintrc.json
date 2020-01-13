@@ -57,7 +57,6 @@
 		],
 
 		"no-empty":"warn",
-		/* 运行常量作为循环条件 */
 		"no-constant-condition": [
 			"error",
 			{
