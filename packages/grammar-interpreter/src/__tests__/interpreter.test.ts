@@ -1,5 +1,5 @@
 import should from "should";
-import { GrammarLexer, parse, ProgramNode, TSCodegenVisitor, EvalVisitor } from "../inter";
+import { GrammarLexer, parse, ProgramNode, TSCodegenVisitor, EvalVisitor } from "../interp";
 import { FirstCalculator, FollowCalculator, getLR1ParsingTable } from "@parser-generator/core";
 import { IGrammar, AugmentedGrammar } from "@parser-generator/definition";
 

@@ -1,7 +1,7 @@
 import should from "should";
 import { Expr } from "./ast";
 import {getLexer} from "../lexer";
-import { genParser } from "../../../inter";
+import { genParser } from "../../../interp";
 import { assert } from "@light0x00/shim";
 import { LRParser } from "@parser-generator/core";
 import { TokenPro } from "@parser-generator/definition";
