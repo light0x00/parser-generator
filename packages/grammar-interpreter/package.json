@@ -1,6 +1,6 @@
 {
 	"name": "@parser-generator/grammar-interpreter",
-	"version": "0.1.0-alpha.0",
+	"version": "0.1.0-alpha.1",
 	"scripts": {
 		"pretest": "rimraf rm lib && yarn run build:cjs",
 		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
