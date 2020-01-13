@@ -1,29 +1,10 @@
 {
 	"name": "@parser-generator/cli",
 	"version": "0.1.0-alpha.1",
-	"scripts": {
-		"pretest": "rimraf rm lib && yarn run build:cjs",
-		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
-		"posttest": "nyc report --reporter=json",
-		"compile": "babel --extensions \".ts\" --copy-files",
-		"prebuild": "rimraf rm lib",
-		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
-		"build:types": "tsc --emitDeclarationOnly --baseUrl ./src --rootDir src --outDir lib/types",
-		"build:cjs": "yarn run compile src --out-dir lib/cjs --config-file ../../babel-cjs.json",
-		"build:esm": "yarn run compile src --out-dir lib/esm --config-file ../../babel-esm.json",
-		"postbuild": "rimraf rm lib/*/__tests__ lib/tsconfig.tsbuildinfo"
-	},
 	"devDependencies": {
-		"@types/getopts": "^2.1.0",
-		"@types/html-webpack-plugin": "^3.2.1",
-		"@types/shelljs": "^0.8.6",
-		"@types/webpack": "^4.41.0",
-		"shelljs": "^0.8.3",
-		"vis-network": "^6.5.0",
-		"webpack": "^4.41.5"
+		"@types/getopts": "^2.1.0"
 	},
 	"dependencies": {
-		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/core": "^0.1.0-alpha.0",
 		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.1",
@@ -34,7 +15,8 @@
 		"vis-data": "^6.2.1",
 		"vis-network": "^6.5.0",
 		"vis-util": "^1.1.8",
-		"webpack": "^4.41.5"
+		"webpack": "^4.41.5",
+		"@types/html-webpack-plugin": "^3.2.1"
 	},
 	"bin": {
 		"pgen": "lib/index.js"

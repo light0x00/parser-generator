@@ -1,23 +1,9 @@
 {
 	"name": "@parser-generator/grammar-interpreter",
 	"version": "0.1.0-alpha.1",
-	"scripts": {
-		"pretest": "rimraf rm lib && yarn run build:cjs",
-		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
-		"posttest": "nyc report --reporter=json",
-		"compile": "babel --extensions \".ts\" --copy-files",
-		"prebuild": "rimraf rm lib",
-		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
-		"build:types": "tsc --emitDeclarationOnly --baseUrl ./src --rootDir src --outDir lib/types",
-		"build:cjs": "yarn run compile src --out-dir lib/cjs --config-file ../../babel-cjs.json",
-		"build:esm": "yarn run compile src --out-dir lib/esm --config-file ../../babel-esm.json",
-		"postbuild": "rimraf rm lib/*/__tests__ lib/tsconfig.tsbuildinfo"
-	},
 	"dependencies": {
-		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/core": "^0.1.0-alpha.0",
-		"core-js": "^3.6.2",
 		"lodash-es": "^4.17.15"
 	},
 	"devDependencies": {

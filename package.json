@@ -2,13 +2,14 @@
 	"name": "root",
 	"private": true,
 	"scripts": {
-		"test": "lerna exec -- yarn run test",
-		"build:old": "tsc -b --clean && lerna run --stream --sort build",
 		"build": "tsc -b --clean && tsc -b",
+		"test": "tsc -b && nyc mocha --require ts-node/register packages/*/src/__tests__/**/*.test.ts",
+		"posttest":"nyc report --reporter=json",
 		"codecov": "codecov -f packages/*/coverage/*.json",
+
 		"prerelease": "lerna publish  --conventional-commits --conventional-prerelease",
 		"release": "lerna publish  --conventional-commits",
-		"release:pages":"gp -a packages/web/dist -m 'release: auto deploy'"
+		"release:pages": "gp -a packages/web/dist -m 'release: auto deploy'"
 	},
 	"workspaces": [
 		"packages/*"
@@ -45,6 +46,7 @@
 		"@babel/register": "^7.7.4",
 		"@commitlint/cli": "^8.2.0",
 		"@commitlint/config-conventional": "^8.2.0",
+		"@istanbuljs/nyc-config-typescript": "^1.0.1",
 		"@types/mocha": "^5.2.7",
 		"@typescript-eslint/eslint-plugin": "^2.9.0",
 		"@typescript-eslint/parser": "^2.9.0",
@@ -60,7 +62,7 @@
 		"lint-staged": "^9.5.0",
 		"lodash": "^4.17.15",
 		"mocha": "^6.2.2",
-		"nyc": "^12.0.1",
+		"nyc": "^15.0.0",
 		"should": "^13.2.3",
 		"ts-node": "^8.5.4",
 		"tsconfig-paths": "^3.9.0",

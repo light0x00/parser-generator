@@ -2,14 +2,12 @@
 	"name": "@parser-generator/web",
 	"version": "0.1.0-alpha.1",
 	"scripts": {
-		"test": "echo 'skip test'",
 		"start": "node -r esm node_modules/.bin/webpack-dev-server --config webpack.config.dev.js --progress",
 		"build:dev": "node -r esm node_modules/.bin/webpack --config webpack.config.dev.js --progress",
 		"build": "node -r esm node_modules/.bin/webpack --config webpack.config.prod.js --progress"
 	},
 	"dependencies": {
 		"@babel/runtime": "^7.7.7",
-		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/core": "^0.1.0-alpha.0",
 		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.1",
