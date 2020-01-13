@@ -31,15 +31,15 @@ describe(`LL Arithmetic Parser Test`, () => {
 		assert(digit instanceof TokenPro);
 	});
 
-	it(`1+2-3*5/4`, function () {
-		let ast = parser.parse(getLexer("1+2-3*5/a 4", digit));
+	it(`1+2-3+(4-5)`, function () {
+		let ast = parser.parse(getLexer("1+2-3+(4-5)", digit));
 		let r = (ast as Expr).eval();
-		should(r).eql(-0.75);
+		should(r).eql(-1);
 	});
 
-	it(`(1+2-3*4/5)+(6)-(7/8)`, function () {
-		let ast = parser.parse(getLexer("(1+2-3*4/5)+(6)-(7/8)", digit));
+	it(`(1+2-3-4+5)+(6)-(7-8)`, function () {
+		let ast = parser.parse(getLexer("(1+2-3-4+5)+(6)-(7-8)", digit));
 		let r = (ast as Expr).eval();
-		should(r).eql(5.725);
+		should(r).eql(8);
 	});
 });
