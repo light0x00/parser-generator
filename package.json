@@ -5,7 +5,7 @@
 		"build": "tsc -b --clean && tsc -b",
 		"test": "tsc -b && nyc mocha --require ts-node/register packages/*/src/__tests__/**/*.test.ts",
 		"posttest":"nyc report --reporter=json",
-		"codecov": "codecov -f packages/*/coverage/*.json",
+		"codecov": "codecov -f coverage/*.json",
 
 		"prerelease": "lerna publish  --conventional-commits --conventional-prerelease",
 		"release": "lerna publish  --conventional-commits",
