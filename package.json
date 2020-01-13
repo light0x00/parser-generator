@@ -6,8 +6,8 @@
 		"build:old": "tsc -b --clean && lerna run --stream --sort build",
 		"build": "tsc -b --clean && tsc -b",
 		"codecov": "codecov -f packages/*/coverage/*.json",
-		"prerelease": "lerna version  --conventional-commits --conventional-prerelease",
-		"release": "lerna version  --conventional-commits",
+		"prerelease": "lerna publish  --conventional-commits --conventional-prerelease",
+		"release": "lerna publish  --conventional-commits",
 		"release:pages":"gp -a packages/web/dist -m 'release: auto deploy'"
 	},
 	"workspaces": [
