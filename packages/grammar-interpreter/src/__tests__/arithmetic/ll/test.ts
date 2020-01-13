@@ -35,13 +35,11 @@ describe(`LL Arithmetic Parser Test`, () => {
 		let ast = parser.parse(getLexer("1+2-3*5/a 4", digit));
 		let r = (ast as Expr).eval();
 		should(r).eql(-0.75);
-		console.log("!!!!!!!");
 	});
 
 	it(`(1+2-3*4/5)+(6)-(7/8)`, function () {
 		let ast = parser.parse(getLexer("(1+2-3*4/5)+(6)-(7/8)", digit));
 		let r = (ast as Expr).eval();
 		should(r).eql(5.725);
-		// console.log("!!!!!!!");
 	});
 });
