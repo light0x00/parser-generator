@@ -1,11 +1,10 @@
 {
 	"name": "@parser-generator/core",
-	"version": "0.0.1-alpha.0",
+	"version": "0.1.0-alpha.0",
 	"scripts": {
 		"pretest": "rimraf rm lib && yarn run build:cjs",
 		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
 		"posttest": "nyc report --reporter=json",
-
 		"compile": "babel --extensions \".ts\" --copy-files",
 		"prebuild": "rimraf rm lib",
 		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
@@ -17,11 +16,10 @@
 	"dependencies": {
 		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
-		"@parser-generator/definition": "^0.0.1-alpha.0",
+		"@parser-generator/definition": "^0.1.0-alpha.0",
 		"@types/debug": "^4.1.5",
 		"debug": "^4.1.1"
 	},
-	"devDependencies": {},
 	"main": "lib/cjs/index.js",
 	"module": "lib/esm/index.js",
 	"types": "lib/types/index.d.ts",

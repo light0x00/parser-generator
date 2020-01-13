@@ -1,17 +1,14 @@
 {
 	"name": "@parser-generator/definition",
-	"version": "0.0.1-alpha.0",
+	"version": "0.1.0-alpha.0",
 	"scripts": {
 		"2prebuild": "rimraf rm lib",
 		"2build": "tsc --emitDeclarationOnly && yarn run compile src --outDir lib",
 		"test": "echo 'skip test'",
-
 		"compile": "babel --extensions \".ts\" --copy-files",
 		"prebuild": "rimraf rm lib",
-
 		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
 		"build:types": "tsc --emitDeclarationOnly --baseUrl ./src --rootDir src --outDir lib/types",
-
 		"build:cjs": "yarn run compile src --out-dir lib/cjs --config-file ../../babel-cjs.json",
 		"build:esm": "yarn run compile src --out-dir lib/esm --config-file ../../babel-esm.json",
 		"postbuild": "rimraf rm lib/*/__tests__"

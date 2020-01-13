@@ -1,11 +1,10 @@
 {
 	"name": "@parser-generator/cli",
-	"version": "0.0.1-alpha.0",
+	"version": "0.1.0-alpha.0",
 	"scripts": {
 		"pretest": "rimraf rm lib && yarn run build:cjs",
 		"test": "nyc mocha lib/cjs/__tests__/**/*.test.js",
 		"posttest": "nyc report --reporter=json",
-
 		"compile": "babel --extensions \".ts\" --copy-files",
 		"prebuild": "rimraf rm lib",
 		"build": "yarn run build:types && yarn run build:cjs && yarn run build:esm",
@@ -26,18 +25,16 @@
 	"dependencies": {
 		"@babel/runtime-corejs3": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
-		"@parser-generator/core": "^0.0.1-alpha.0",
-		"@parser-generator/grammar-interpreter": "^0.0.1-alpha.0",
+		"@parser-generator/core": "^0.1.0-alpha.0",
+		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.0",
 		"getopts": "^2.2.5",
-
-		"webpack": "^4.41.5",
 		"html-webpack-plugin": "^3.2.0",
-
 		"keycharm": "^0.2.0",
 		"moment": "^2.24.0",
 		"vis-data": "^6.2.1",
 		"vis-network": "^6.5.0",
-		"vis-util": "^1.1.8"
+		"vis-util": "^1.1.8",
+		"webpack": "^4.41.5"
 	},
 	"bin": {
 		"pgen": "lib/index.js"

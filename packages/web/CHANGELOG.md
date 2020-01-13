@@ -8,18 +8,9 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* some minor change ([cd02286](https://github.com/light0x00/parser-generator/commit/cd02286373ecb858b2200e3806c0cc666c424581))
 * web ([f6d6fc6](https://github.com/light0x00/parser-generator/commit/f6d6fc6008aad0f23c1c63b14080d79b2505d01d))
 
 
 ### Features
 
 * web ([5d1d7e8](https://github.com/light0x00/parser-generator/commit/5d1d7e82061284137a3726646775be1be9a5b379))
-
-
-
-
-
-## 0.0.1-alpha.0 (2020-01-01)
-
-**Note:** Version bump only for package root
