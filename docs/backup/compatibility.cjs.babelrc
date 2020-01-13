@@ -1,0 +1,16 @@
+{
+	"extends": "./babel-ts.json",
+	"presets": [
+		[
+			"@babel/env",
+			{
+				"targets": "node 8.12.0",
+				"modules": "commonjs",
+				"useBuiltIns": "usage",
+				"corejs":3
+			}
+		]
+	],
+	"sourceMaps": "inline",
+	"ignore": []
+}

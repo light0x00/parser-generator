@@ -1,0 +1,16 @@
+{
+	"extends": "./babel-ts.json",
+	"presets": [
+		[
+			"@babel/env",
+			{
+				"targets": "> 0.25%, not dead",
+				"modules": false,
+				"useBuiltIns": "usage",
+				"corejs":3
+			}
+		]
+	],
+	"sourceMaps": "inline",
+	"ignore": []
+}
