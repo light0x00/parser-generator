@@ -7,7 +7,8 @@
 		"build": "tsc -b --clean && tsc -b",
 		"codecov": "codecov -f packages/*/coverage/*.json",
 		"prerelease": "lerna version  --conventional-commits --conventional-prerelease",
-		"release": "lerna version  --conventional-commits"
+		"release": "lerna version  --conventional-commits",
+		"release:pages":"gp -a packages/web/dist -m 'release: auto deploy'"
 	},
 	"workspaces": [
 		"packages/*"
@@ -53,6 +54,7 @@
 		"cross-env": "^6.0.3",
 		"eslint": "^6.7.2",
 		"eslint-plugin-vue": "^6.1.2",
+		"github-pages-publisher": "^0.0.4",
 		"husky": "^3.1.0",
 		"lerna": "^3.19.0",
 		"lint-staged": "^9.5.0",

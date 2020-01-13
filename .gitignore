@@ -8,3 +8,4 @@ coverage/
 tsconfig.tsbuildinfo
 *.tmp.ts
 packages/web/src/styles/theme/
+.gh-pages/
