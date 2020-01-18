@@ -7,4 +7,6 @@
 [![a](https://img.shields.io/npm/v/@parser-generator/cli)](https://www.npmjs.com/package/@parser-generator/cli)
 
 
+It is still in the experimental stage.
+
 [Try Online](https://light0x00.github.io/parser-generator/)
