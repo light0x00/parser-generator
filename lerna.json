@@ -3,7 +3,7 @@
     "packages/cli",
     "packages/core",
     "packages/definition",
-    "packages/grammar-interp"
+    "packages/grammar-interpreter"
   ],
   "version": "0.1.0-alpha.1",
   "npmClient": "yarn",
