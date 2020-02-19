@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div style="height:30px">
+    <div style="height:30px;position: absolute;">
       <el-button circle class="el-icon-rank" @click="fit" />
       <el-button v-show="!isFullScreen" circle class="el-icon-full-screen" @click="fullScreen" />
       <el-button slot="download" circle class="el-icon-camera" @click="download" />
     </div>
-    <div ref="networkElement" style="height:calc(100% - 30px);" />
+    <div ref="networkElement" style="height:calc(100% - 30px);cursor: grab" />
   </div>
 </template>
 <script lang="js">
