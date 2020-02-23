@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div style="height:30px;position: absolute;">
+    <div style="height:30px;position: absolute;z-index:1">
       <el-button circle class="el-icon-rank" @click="fit" />
       <el-button v-show="!isFullScreen" circle class="el-icon-full-screen" @click="fullScreen" />
       <el-button slot="download" circle class="el-icon-camera" @click="download" />
