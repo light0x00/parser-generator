@@ -89,9 +89,10 @@
 </template>
 
 <script lang="js">
-import { genParser,adapter } from "@parser-generator/grammar-interpreter";
+
 import { saveAs } from "file-saver";
 import Vue from "vue";
+// import { genParser,adapter } from "@parser-generator/grammar-interpreter";
 
 const DEFAULT_GRAMMAR =
 `<% import { Expr } from "./ast"; %>
@@ -142,8 +143,9 @@ export default Vue.extend({
 		}
 	},
 	methods: {
-		gen() {
+		async gen() {
 			try {
+				let { genParser,adapter } = await import(/* webpackChunkName: 'pgen' */"@parser-generator/grammar-interpreter");
 				let r = genParser(this.grammar, this.options);
 				console.log(r);
 

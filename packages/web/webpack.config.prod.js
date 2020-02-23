@@ -1,4 +1,3 @@
-
 import TerserPlugin from "terser-webpack-plugin";
 import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 import {CleanWebpackPlugin} from "clean-webpack-plugin";
@@ -19,7 +18,12 @@ export default merge(baseConfig,{
 		minimize: true,
 		minimizer: [
 			new TerserPlugin({
-				exclude:/[\\/]node_modules[\\/]@parser-generator[\\/](.*)/,
+				chunkFilter:(chunk)=>{
+					if(chunk.name == "pgen"){
+						return false;
+					}
+					return true;
+				},
 				terserOptions: {
 					compress: {
 						drop_console: false,

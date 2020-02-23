@@ -2,6 +2,7 @@ import { resolve } from "path";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import VueLoaderPlugin from "vue-loader/lib/plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 /*
 
@@ -69,6 +70,7 @@ export default {
 		]
 	},
 	plugins: [
+		new CleanWebpackPlugin(),
 		new VueLoaderPlugin(),
 		new MiniCssExtractPlugin({
 			filename: ASSETS_PATHS.css,
@@ -96,7 +98,7 @@ export default {
 			chunks: "all",
 			maxInitialRequests: 8,
 			maxAsyncRequests: 5,
-			minSize: 30000,
+			minSize: 0,
 			maxSize: 0,
 			minChunks: 1,
 			automaticNameDelimiter: "-",
@@ -107,20 +109,31 @@ export default {
 					chunks: "initial",
 					test: /[\\/]node_modules[\\/]_?element-ui(.*)/,
 					name: "ui",
-					// priority: 20,
+					priority: 10,
 				},
 				element_css: {
 					chunks: "initial",
 					test: /src\/styles\/element-ui-theme/,
 					name: "ui",
-					// priority: 20,
+					priority: 10,
 				},
+				// lodash :{
+				// 	chunks: "all",
+				// 	test: /[\\/]node_modules[\\/]lodash-es/,
+				// 	name: "lodash",
+				// },
 				/* 同步的第三方库 */
 				vendors: {
 					chunks: "initial",
 					test: /[\\/]node_modules[\\/]/,
 					// priority: 17,
 					name: "vendors",
+				},
+				vendors_async: {
+					chunks: "async",
+					test: /[\\/]node_modules[\\/]/,
+					// priority: 17,
+					name: "vendors_async",
 				},
 			}
 		}
