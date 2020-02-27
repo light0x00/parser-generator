@@ -2,8 +2,6 @@ import { resolve } from "path";
 import webpack from "webpack";
 import merge from "webpack-merge";
 import baseConfig from "./webpack.config";
-import TerserPlugin from "terser-webpack-plugin";
-import OptimizeCSSAssetsPlugin from "optimize-css-assets-webpack-plugin";
 
 export default merge(baseConfig, {
 	mode: "development",

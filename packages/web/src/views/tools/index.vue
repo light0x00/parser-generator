@@ -63,8 +63,8 @@
         <!-- LR 自动机 -->
         <collapse>
           <template slot="head">LR Automata</template>
-          <div slot="body" style="width:calc(100% - 2px);height:500px;overflow: auto; resize: both; border:1px solid #e1e4e8; ">
-            <network ref="automata" :value="output.lrAutomata" style="height:900px; background-color:white;" />
+          <div slot="body" style="width:calc(100% - 2px);height:500px;overflow: auto;  border:1px solid #e1e4e8; ">
+            <network ref="automata" :value="output.lrAutomata" style="height:900px; background-color:white;width: calc(100% - 20px) resize: both;" />
           </div>
         </collapse>
 

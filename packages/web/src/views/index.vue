@@ -21,6 +21,7 @@
     </div>
 
     <router-view class="content-container" />
+
   </div>
 </template>
 
