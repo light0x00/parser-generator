@@ -1,3 +1,4 @@
+/* 全局基配置 */
 {
 	"compilerOptions": {
 		/* js环境 */

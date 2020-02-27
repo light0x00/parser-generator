@@ -1,4 +1,4 @@
-/* 此配置用于构建cjs、esm */
+/* 此配置是全局构建入口配置,同时构建cjs、esm */
 {
 	"extends": "./tsconfig.base.json",
 	"references": [

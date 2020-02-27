@@ -1,3 +1,4 @@
+/* 用于给打包为cjs的模块作为基配置 */
 {
 	"extends": "./tsconfig.base.json",
 	"compilerOptions": {
