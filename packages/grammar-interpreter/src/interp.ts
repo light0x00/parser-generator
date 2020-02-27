@@ -740,7 +740,7 @@ export class EvalVisitor implements IVisitor {
 				body.push(new SymbolWrapper(symToken.value as string));
 			} else if (symToken.tag == Tag.ID || symToken.tag == Tag.NIL) {
 				let proto = node.env.getSym(symToken.value as string);
-				assert(proto != undefined, `Undeclared identifier ${symToken.value} at ` + pos(symToken));
+				assert(proto != undefined, `Undeclared identifier "${symToken.value}" at ` + pos(symToken));
 				body.push(new SymbolWrapper(proto));
 			} else {
 				throw new Error(`Unknow token ${symToken}!`);
