@@ -10,7 +10,8 @@
       rows="20"
       show-word-limit
     />
-    <el-alert v-show="errorMsg!=''" :title="errorMsg" type="error" show-icon />
+    <el-alert v-show="errorMsg!=''" :title="errorMsg" type="error" show-icon :closable="false" />
+    <el-alert v-show="successMsg!=''" :title="successMsg" type="success" show-icon :closable="false" />
 
     <el-row type="flex">
       <el-select v-model="options.parser" placeholder="parser type">
@@ -63,8 +64,8 @@
         <!-- LR 自动机 -->
         <collapse>
           <template slot="head">LR Automata</template>
-          <div slot="body" style="width:calc(100% - 2px);height:500px;overflow: auto;  border:1px solid #e1e4e8; ">
-            <network ref="automata" :value="output.lrAutomata" style="height:900px; background-color:white;width: calc(100% - 20px) resize: both;" />
+          <div slot="body" style="width:calc(100% - 2px);height:600px;overflow: auto;  border:1px solid #e1e4e8;resize: vertical ">
+            <network ref="automata" :value="output.lrAutomata" style="height:900px; background-color:white;width: calc(100% - 20px) ;" />
           </div>
         </collapse>
 
@@ -128,7 +129,8 @@ export default Vue.extend({
 				parser: "LR1",
 				lang: "TS"
 			},
-			errorMsg: ""
+			errorMsg0: "",
+			successMsg0: ""
 		};
 	},
 	computed: {
@@ -140,6 +142,24 @@ export default Vue.extend({
 		},
 		outputVisible() {
 			return this.output.code != "";
+		},
+		successMsg: {
+			get (){
+				return this.successMsg0;
+			},
+			set(v){
+				this.errorMsg0="";
+				this.successMsg0 = v;
+			}
+		},
+		errorMsg :{
+			get(){
+				return this.errorMsg0;
+			},
+			set(v){
+				this.successMsg0 ="";
+				this.errorMsg0= v;
+			}
 		}
 	},
 	methods: {
@@ -173,9 +193,11 @@ export default Vue.extend({
 					this.output.lrAutomata = adapter.lrAutomataToGraph(
 						lrAutomata
 					);
+				this.successMsg = "success!";
 			} catch (e) {
 				console.error(e);
 				this.errorMsg = e.message;
+
 			}
 		},
 		downloadSourceCode() {
