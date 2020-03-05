@@ -3,7 +3,12 @@
 	"all": true,
 	"check-coverage": false,
 	"report-dir": "coverage",
+	"include":[
+		"packages"
+	],
 	"exclude": [
-		"packages/web"
+		"packages/web",
+		"packages/cli",
+		".gh-pages"
 	]
 }
