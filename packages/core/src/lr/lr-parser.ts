@@ -54,23 +54,3 @@ export class LRParser {
 		return astStack.pop() as ASTree;
 	}
 }
-
-/*
-1. ASTNode的元素的顺序问题
-
-考虑如下文法
-	S->E
-	E->E+T | E-T | T
-	T->T*F | T/F |F
-	F->(E) | NUM
-
-假设输入:
-1 + 2 / 3
-必然在某一时刻 Ast Stack中的元素为:
-ENode + TNode / FNode
-
-此时,即将要执行的动作是将 TNode / FNode 归约为T,创建一个TNode:
-	new TNode([TNode,'/',FNode])
-这时要注意的是,传给TNode的集合应该保持与产生式中定义的符号顺序保持一致.
-假如传入的是 [FNode,'/',TNode], 那么原本的2/3的含义将变为3/2
-*/

@@ -1,6 +1,6 @@
 import { assert } from "@light0x00/shim";
-import { NonTerminal, Terminal, EOF, Operation, ParsingTable, Goto, Accept } from "@parser-generator/definition";
-import { StateSet, Item, ReduceExt, ShiftExt } from "./definition";
+import { NonTerminal, Terminal, EOF, Operation, ParsingTable, Goto, Accept, SSymbol } from "@parser-generator/definition";
+import { StateSet, Item, ReduceExt, ShiftExt, State } from "./definition";
 
 import { IFunction } from "@light0x00/shim";
 
@@ -43,8 +43,13 @@ export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, al
 				let existingOp = parsingTable.get(curState.id, followSymbol);
 				if (existingOp != null) { //issue #关于冲突检查 1
 					if (existingOp.isReduce()) { //issue #关于冲突检查 2. 移入-归约冲突
-						if (!compareForShiftReduceConflict({ prec: curPrec, leftAssoc: curLeftAssoc }, { prec: (existingOp as ReduceExt).prec, leftAssoc: (existingOp as ReduceExt).leftAssoc }))
+						assert(existingOp instanceof ReduceExt);
+						reduceShiftLog(curState, curItem, existingOp ,followSymbol);
+						if (compareForShiftReduceConflict({ prec: curPrec, leftAssoc: curLeftAssoc }, { prec: (existingOp).prec, leftAssoc: (existingOp as ReduceExt).leftAssoc }) == "reduce") {
+							console.log("Choose Existing-Reduce");
 							continue;
+						}
+						console.log("Choose Shift");
 					}
 					else if (existingOp.isShift()) //issue #关于优先级与结合性 2
 						(existingOp as ShiftExt).setIfLarger(curPrec, curLeftAssoc);
@@ -69,18 +74,31 @@ export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, al
 					let existingOp = parsingTable.get(curState.id, followSymbol);
 					if (existingOp != null) { //issue #关于冲突检查
 						if (existingOp.isReduce() && existingOp.prod.head != curItem.prod.head) { //issue #关于冲突检查 1. 归约-归约冲突
+
+							assert(existingOp instanceof ReduceExt);
+							reduceReduceLog(curState, existingOp, curItem , followSymbol);
+
 							if (!compareForReduceReduceConflict(
 								{ prec: curPrec, leftAssoc: curLeftAssoc },
-								{ prec: (existingOp as ReduceExt).prec, leftAssoc: curLeftAssoc })) {
+								{ prec: (existingOp).prec, leftAssoc: existingOp.leftAssoc })) {
+								console.log(`choose Existing-Reduce`);
 								continue;
 							}
+							console.log(`Choose Current-Reduce`);
 						}
 						else if (existingOp.isShift()) { //issue #关于冲突检查 2. 移入-归约冲突
-							if (!compareForShiftReduceConflict(
-								{ prec: curPrec, leftAssoc: curLeftAssoc },
-								{ prec: (existingOp as ShiftExt).prec, leftAssoc: curLeftAssoc })) {
+
+							assert(existingOp instanceof ShiftExt);
+							shiftReduceLog(curState, existingOp, curItem ,followSymbol);
+
+							if (compareForShiftReduceConflict(
+								{ prec: existingOp.prec, leftAssoc: existingOp.leftAssoc },
+								{ prec: curPrec, leftAssoc: curLeftAssoc }) == "shift"
+							) {
+								console.log(`Choose Existing-Shift`);
 								continue;
 							}
+							console.log(`Choose Reduce`);
 						}
 					}
 					let op;
@@ -89,7 +107,7 @@ export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, al
 						op = new Accept();
 					//reduce
 					else
-						op = new ReduceExt(curItem.prod, curPrec, curLeftAssoc);
+						op = new ReduceExt(curItem, curPrec, curLeftAssoc);
 					debug(`state(${curState.id}) ${followSymbol} ${op}`);
 					parsingTable.put(curState.id, followSymbol, op);
 				}
@@ -100,25 +118,22 @@ export function getParsingTable(stateSet: StateSet, startSymbol: NonTerminal, al
 }
 
 //issue #关于优先级与结合性 3.1 移入归约冲突
-function compareForShiftReduceConflict(cur: { prec: number, leftAssoc: boolean }, existing: { prec: number, leftAssoc: boolean }) {
-	let { prec: curPrec, leftAssoc: curLeftAssoc } = cur;
-	let { prec: existingPrec } = existing;
+function compareForShiftReduceConflict(shift: { prec: number, leftAssoc: boolean }, reduce: { prec: number, leftAssoc: boolean }): "shift" | "reduce" {
+	let { prec: reducePrec, leftAssoc: reduceLeftAssoc } = reduce;
+	let { prec: shiftPrec, leftAssoc: shiftLeftAssoc } = shift;
 
-	if (curPrec > existingPrec) {
-		//shift
-		return true;
-	} else if (curPrec == existingPrec) {
-		// assert(curLeftAssoc == exisingAssoc, `Both ${existingOp.prod},${curItem.prod} contain the same priority ${curPrec} but assoc differently`);
-		if (curLeftAssoc) {
-			//reduce
-			return false;
+	if (reducePrec == shiftPrec) {
+		// assert(shiftLeftAssoc == reduceLeftAssoc, `Both ${existingOp.prod},${curItem.prod} contain the same priority ${curPrec} but assoc differently`);
+		if (reduceLeftAssoc) {
+			return "reduce";
 		} else {
-			//shift
-			return true;
+			return "shift";
 		}
-	} else {
-		//reduce
-		return false;
+	} else if (reducePrec > shiftPrec) {
+		return "reduce";
+	}
+	else {
+		return "shift";
 	}
 }
 
@@ -134,6 +149,62 @@ function compareForReduceReduceConflict(cur: { prec: number, leftAssoc: boolean 
 	}
 }
 
+import Colors from "ansi-colors";
+
+function reduceShiftLog(state: State, shift: Item, existingReduce: ReduceExt,symbol: SSymbol) {
+	console.log(`
+${Colors.yellow("Reduce-Shift conflict detected:")}
+${Colors.yellow("[State]")}
+${state.toString()}
+${Colors.yellow("[Conflict Symbol]")}
+${symbol}
+${Colors.yellow("[Existing Reduce]")}
+${existingReduce}
+production: ${existingReduce.item}
+precedence: ${existingReduce.prod.prec}
+association: ${existingReduce.prod.leftAssoc ? "left" : "right"}
+${Colors.yellow("[Shift]")}
+production: ${shift}
+precedence: ${shift.prod.prec}
+association: ${shift.prod.leftAssoc ? "left" : "right"}
+		`);
+}
+
+function shiftReduceLog(state: State, existingShift: ShiftExt, reduce: Item,symbol: SSymbol ) {
+	console.log(`
+${Colors.yellow("Shift-Reduce conflict detected:")}
+${Colors.yellow("[State]")}
+${state.toString()}
+${Colors.yellow("[Conflict Symbol]")}
+${symbol}
+${Colors.yellow("[Existing Shift]")}
+nextState: <${existingShift.nextStateId}>:
+precedence: ${existingShift.prec}
+association: ${existingShift.leftAssoc ? "left" : "right"}
+${Colors.yellow("[Reduce]")}
+item: ${reduce}
+precedence: ${reduce.prod.prec}
+association: ${reduce.prod.leftAssoc ? "left" : "right"}
+		`);
+}
+
+function reduceReduceLog(state: State, existingOp: ReduceExt, curItem: Item, symbol: Terminal) {
+	console.log(`
+${Colors.yellow("Reduce-Reduce conflict detected:")}
+${Colors.yellow("[State]")}
+${state}
+${Colors.yellow("[Conflict Symbol]")}
+${symbol}
+${Colors.yellow("[Existing Reduce]")}
+production: ${existingOp.prod}
+precedence: ${existingOp.prec}
+association: ${existingOp.leftAssoc ? "left" : "right"}
+${Colors.redBright("[Current Reduce]")}
+item: ${curItem.toString()}
+precedence: ${curItem.prod.prec}
+association: ${curItem.prod.leftAssoc ? "left" : "right"}
+		`);
+}
 /*
 关于Shift、GOTO、Reduce、Accept的产生时机
 	- Shift/GOTO,每当遇到形如A->𝜶·𝜷的项时,如果𝜷是非终结符则产生GOTO动作,否则为Shift

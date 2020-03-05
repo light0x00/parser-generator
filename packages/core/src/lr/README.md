@@ -375,7 +375,7 @@ E->E·*E,{+,*,EOF}
 一个产生式的prec、assoc由产生式中的符号决定. 上例中,`E->E+E`的prec、assoc继承`+`,即: `prec=1,assoc=left`.
 如果产生式中存在多个符号具有prec、assoc,则以prec最大的符号为准,例如 `E->E+E*`中,`*`的优先级高于`+`,因此该产生式的prec、assoc以`*`为准,即`*: prec=2,assoc=left`.
 
-**项**
+**项的优先级**
 
 项的优先级、结合性继承于对应的产生式.
 
@@ -392,12 +392,12 @@ E->E·*E,{+,*,EOF}
 ```
 	如果相同优先级
 		结合方向相同
-			- 左结合,优先归约
-			- 右结合,优先移入
+			- 同为左结合,优先归约
+			- 同为右结合,优先移入
 		结合方向不同
-			抛出异常
+			- 优先规约
 	不同优先级
-		以高优先级的操作的prec、assoc为准
+		选择高优先级的操作
 ```
 
 例1,E->E·+E对`+`产生一个`shift`,而E->E+E·对`+`产生一个`reduce`,两个操作的优先级相同,且为左结合,因此选择`reduce`
@@ -424,7 +424,30 @@ A->a+b·	$
 B->a+b·	$
 ```
 
-# LR Parser 实现
+# LR Parser
+
+## 规约时子节点顺序问题
+
+考虑如下文法
+
+```
+S->E
+E->E+T | E-T | T
+T->T*F | T/F |F
+F->(E) | NUM
+```
+
+假设输入: `1 + 2 / 3`
+
+必然在某一时刻 Ast Stack中的元素为: `ENode + TNode / FNode`
+
+此时,即将要执行的动作是将 `TNode / FNode` 归约为T,创建一个TNode: `new TNode([TNode,'/',FNode])`
+
+这时要注意的是,传给TNode的集合应该保持与产生式中定义的符号顺序保持一致.
+
+假如传入的是 [FNode,'/',TNode], 那么原本的2/3的含义将变为3/2
+
+## Parser 实现
 
 ```
 	parse(lexer: ILexer): ASTree {
@@ -467,3 +490,4 @@ B->a+b·	$
 		return astStack.pop() as ASTree;
 	}
 ```
+

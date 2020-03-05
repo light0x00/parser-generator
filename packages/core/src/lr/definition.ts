@@ -64,8 +64,7 @@ export class Item {
 		}
 		if (this._dot == symbols.length)
 			str += "·";
-		str += ",";
-		str += "{" + Array.from(this.lookaheadSet).join(",") + "}";
+		str +=" ❕" + Array.from(this.lookaheadSet).join(" ") ;
 		return `${this.prod.head.name}->${str}`;
 	}
 	equals(other: Item) {
@@ -249,18 +248,18 @@ export interface AutomataTools {
 
 
 export class ShiftExt extends Shift {
-	prec: number;
-	assoc: boolean;
+	public prec: number;
+	public leftAssoc: boolean;
 	constructor(nextStateId: number, prec: number = -1, assoc: boolean = false) {
 		super(nextStateId);
 		this.prec = prec;
-		this.assoc = assoc;
+		this.leftAssoc = assoc;
 	}
 
 	setIfLarger(prec: number, assoc: boolean) {
 		if (prec > this.prec) {
 			this.prec = prec;
-			this.assoc = assoc;
+			this.leftAssoc = assoc;
 		}
 	}
 
@@ -273,8 +272,10 @@ export class ShiftExt extends Shift {
 export class ReduceExt extends Reduce {
 	prec: number;
 	leftAssoc: boolean;
-	constructor(prod: Production, prec: number = -1, leftAssoc: boolean = false) {
-		super(prod);
+	item : Item;
+	constructor( item : Item, prec: number = -1, leftAssoc: boolean = false) {
+		super(item.prod);
+		this.item =item;
 		this.prec = prec;
 		this.leftAssoc = leftAssoc;
 	}
