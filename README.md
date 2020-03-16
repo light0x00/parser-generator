@@ -8,9 +8,7 @@
 
 To generate First-Set,Follow-Set,LR-Automata,LR-Parsing-Table,➡️ [Try Online](https://light0x00.github.io/parser-generator/).
 
-It was done when i was learning 《Compilers Principles》.At present,It is not very convenient to use, I'll design a better one in future.
-
-My other project used this library to implement a [JSON interpreter](https://github.com/light0x00/jsonx), that can serve as a reference.
+It was done when i was learning 《Compilers Principles》.At present,It is not very convenient to use, my other project used this library to implement a [JSON interpreter](https://github.com/light0x00/jsonx), that can serve as a reference.
 
 
 
