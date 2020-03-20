@@ -7,6 +7,7 @@
 ## 文法解释器重构草案
 
 ```
+#!lang=ts
 @script <% import {Expr,MinusTerm,AddTerm,Factor} from './ast'%>
 
 @token ID
@@ -31,6 +32,14 @@ F -> ID <%= new Factor($children) %> ;
 @ap left 2 '*','/'
 @assoc right '='
 @prec -1 '='
+```
+
+### 头声明
+
+使用 `lang=ts`形式指定目标语言
+
+```
+#!lang=ts
 ```
 
 ### 保留字符
