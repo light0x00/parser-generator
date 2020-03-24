@@ -434,7 +434,8 @@ class NonTerminalNode extends ASTree {
 		3. 后置动作是必须的,一个非终结符的产生式至少应有一个产生式有后置动作
 		*/
 		let defaultPreAction: Token | undefined;
-		let defaultPostAction: Token | undefined;
+		//后置动作默认以最后一个产生式的后置动作为准
+		let defaultPostAction: Token | undefined = prods[prods.length-1].postAction;
 		for (let p of prods) {
 			if (defaultPreAction == undefined && p.preAction != undefined)
 				defaultPreAction = p.preAction;
