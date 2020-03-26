@@ -427,31 +427,28 @@ class NonTerminalNode extends ASTree {
 		this._varName = token.value as string;
 		this.token = token;
 		this.prods = prods;
-		//前置、后置动作的共享
-		/*
-		1. 如果一个产生式没有前置动作,而其兄弟有,则兄弟与其共享
-		2. 后置动作遵循前置动作的逻辑
-		3. 后置动作是必须的,一个非终结符的产生式至少应有一个产生式有后置动作
-		*/
-		let defaultPreAction: Token | undefined;
-		//后置动作默认以最后一个产生式的后置动作为准
-		let defaultPostAction: Token | undefined = prods[prods.length-1].postAction;
+
+		let defaultPostAction: Token | undefined;
 		for (let p of prods) {
-			if (defaultPreAction == undefined && p.preAction != undefined)
-				defaultPreAction = p.preAction;
-			if (defaultPostAction == undefined && p.postAction != undefined)
+			if (defaultPostAction == undefined && p.postAction != undefined) {
 				defaultPostAction = p.postAction;
-			if (defaultPreAction != undefined && defaultPostAction != undefined)
 				break;
+			}
 		}
 		if (defaultPostAction == undefined)
 			console.warn(`The nonterminal "${this.varName}" doesn't have post-action,it's required for parser!`);
-		// assert(defaultPostAction != undefined, `productions of nonterminal ${this.name} should have at least one post action`);
-		for (let p of prods) {
-			if (p.preAction == undefined)
-				p.preAction = defaultPreAction;
-			if (p.postAction == undefined)
-				p.postAction = defaultPostAction;
+		//没有归约动作的产生式 优先向后寻找 如果后方没有 则使用默认的
+		for (let i = 0; i < prods.length; i++) {
+			if (prods[i].postAction == undefined) {
+				for (let k = i+1; k < prods.length; k++) {
+					if (prods[k].postAction != undefined) {
+						prods[i].postAction = prods[k].postAction;
+						break;
+					}
+				}
+				if (prods[i].postAction == undefined)
+					prods[i].postAction = defaultPostAction;
+			}
 		}
 	}
 	get varName() {
