@@ -4,7 +4,7 @@ import should from "should";
 
 describe(`CLI Test`, () => {
 
-	let f = resolve(__dirname, "./json.txt");
+	let f = resolve(__dirname, "./lang.txt");
 	let o = resolve(__dirname, "../../dist");
 
 	it(`Codegen test`, async () => {

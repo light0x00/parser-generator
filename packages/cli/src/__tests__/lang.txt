@@ -1,0 +1,217 @@
+#TOKEN_PROTOTYPES
+NUMBER,IDENTIFIER
+
+#GRAMMAR
+S -> exprs;
+
+object_literal ->
+	'{' '}' |
+	'{' field_list '}'
+	<% (e)=>new ObjectLiteral(e) %> ;
+
+	field_list ->
+		literal_field |
+		literal_field ',' field_list
+		<% (e)=>new FieldList(e) %> ;
+
+	literal_field ->
+		IDENTIFIER ':' assignment_expr
+		<% (e)=>new LiteralField(e) %> ;
+
+array_literal ->
+	'[' ']' |
+	'[' element_list ']'
+	<% (e)=>new ArrayLiteral(e) %>;
+
+	element_list ->
+		literal_element
+		<% (e)=>e[0] %>
+		|
+		literal_element ',' element_list
+		<% (e)=>new ElementList(e) %>;
+
+	literal_element ->
+		assignment_expr
+		<% (e)=>e[0] %>;
+
+member_expr ->
+	primary_expr
+	<% (e)=>e[0] %>
+	|
+	member_expr '[' assignment_expr ']'
+	<% (e)=>new ArrayMemberExpr(e) %>
+	|
+	member_expr '.' IDENTIFIER
+	<% (e)=>new ObjectMemberExpr(e) %> ;
+
+new_expr ->
+	'new' member_expr arguments
+	<% (e)=>new NewExpr(e) %> ;
+
+call_expr ->
+	member_expr arguments
+	|
+	call_expr arguments
+	<% (e)=>new CallExpr(e) %> ;
+
+arguments ->
+	'(' ')' |
+	'(' argument_list  ')'
+	<% (e)=>new Arguments(e) %> ;
+
+	argument_list ->
+		assignment_expr
+		<% (e)=>e[0] %>
+		|
+		argument_list ',' assignment_expr
+		<% (e)=>new ArgumentList(e) %> ;
+
+left_side_expr ->
+	call_expr
+	<% (e)=>e[0] %>
+	|
+	new_expr
+	<% (e)=>new NewExpr(e) %> ;
+
+primary_expr ->
+	NUMBER
+	<% (e)=>new PrimaryExpr(e) %>
+	|
+	object_literal
+	<% (e)=>e[0] %>
+	|
+	array_literal
+	<% (e)=>e[0] %>
+	|
+	parenthesize_expr
+	<% (e)=>e[0] %> ;
+
+parenthesize_expr ->
+	'(' exprs ')'
+	<% (e)=>new ParenthesizeExpr(e) %> ;
+
+unary_expr ->
+	primary_expr
+	<% (e)=>e[0] %>
+	|
+	'!' unary_expr |
+	'~' unary_expr |
+	'+' unary_expr |
+	'-' unary_expr
+	<% (e)=>new UnaryExpr(e) %> ;
+
+multiplicative_expr ->
+	unary_expr
+	<% (e)=>e[0] %>
+	|
+	multiplicative_expr '*' unary_expr |
+	multiplicative_expr '/' unary_expr |
+	multiplicative_expr '%' unary_expr
+	<% (e)=>new MultiplicativeExpr(e) %>;
+
+additive_expr ->
+	multiplicative_expr
+	<% (e)=>e[0] %>
+	|
+	additive_expr '+' multiplicative_expr |
+	additive_expr '-' multiplicative_expr
+	<% (e)=>new AdditiveExpr(e) %>;
+
+bitwise_shift_expr ->
+	additive_expr
+	<% (e)=>e[0] %>
+	|
+	bitwise_shift_expr '>>' additive_expr |
+	bitwise_shift_expr '<<' additive_expr |
+	bitwise_shift_expr '>>>' additive_expr
+	<% (e)=>new BitwiseShiftExpr(e) %> ;
+
+relational_expr ->
+	bitwise_shift_expr
+	<% (e)=>e[0] %>
+	|
+	relational_expr '<' bitwise_shift_expr |
+	relational_expr '>' bitwise_shift_expr |
+	relational_expr '<=' bitwise_shift_expr |
+	relational_expr '>=' bitwise_shift_expr
+	<% (e)=>new RelationalExpr(e) %> ;
+
+equality_expr ->
+	relational_expr
+	<% (e)=>e[0] %>
+	|
+	equality_expr '==' relational_expr |
+	equality_expr '!=' relational_expr
+	<% (e)=>new EqualityExpr(e) %> ;
+
+bitwise_and_expr ->
+	equality_expr
+	<% (e)=>e[0] %>
+	|
+	bitwise_and_expr '&' equality_expr
+	<% (e)=>new BitwiseAndExpr(e) %> ;
+
+bitwise_xor_expr ->
+	bitwise_and_expr
+	<% (e)=>e[0] %>
+	|
+	bitwise_xor_expr '^' bitwise_and_expr
+	<% (e)=>new BitwiseXorExpr(e) %> ;
+
+bitwise_or_expr ->
+	bitwise_xor_expr
+	<% (e)=>e[0] %>
+	|
+	bitwise_or_expr '|' bitwise_xor_expr
+	<% (e)=>new BitwiseOrExpr(e) %> ;
+
+logical_and_expr ->
+	bitwise_or_expr
+	<% (e)=>e[0] %>
+	|
+	logical_and_expr '&&' bitwise_or_expr
+	<% (e)=>new LogicalAndExpr(e) %> ;
+
+logical_or_expr ->
+	logical_and_expr
+	<% (e)=>e[0] %>
+	|
+	logical_or_expr '||' logical_and_expr
+	<% (e)=>new LogicalOrExpr(e) %> ;
+
+conditional_expr ->
+	logical_or_expr
+	<% (e)=>e[0] %>
+	|
+	logical_or_expr  '?' assignment_expr ':' assignment_expr
+	<% (e)=>new ConditionalExpr(e) %> ;
+
+
+assignment_expr ->
+	conditional_expr
+	<% (e)=>e[0] %>
+	|
+	left_side_expr '=' assignment_expr |
+	left_side_expr compound_assignment assignment_expr
+	<% (e)=>new LeftSideExpr(e) %> ;
+
+	compound_assignment ->
+		'*=' |
+		'/=' |
+		'%=' |
+		'+=' |
+		'-=' |
+		'<<=' |
+		'>>=' |
+		'>>>=' |
+		'&=' |
+		'^=' |
+		'|='
+		<% (e)=>e[0] %> ;
+
+exprs ->
+	assignment_expr
+	<% (e)=>e[0] %>
+	|
+	exprs ',' assignment_expr
+	<% (e)=>new Exprs(e) %> ;

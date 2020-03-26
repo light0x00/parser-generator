@@ -1,4 +1,4 @@
-import { isIterable } from "@light0x00/shim";
+import { isIterable,Queue } from "@light0x00/shim";
 
 export class CyclicDepsDector<T> {
 	private dependencies = new Map<T, Set<T>>();
@@ -8,26 +8,26 @@ export class CyclicDepsDector<T> {
      * @param startPoint
      */
 	private isConnected(startPoint: T, endPoint: T) {
-		let otherDeps = this.dependencies.get(startPoint);
-		if (otherDeps === undefined)
+		let roots = this.dependencies.get(startPoint);
+		if (roots === undefined)
 			return false;
-		if (otherDeps.has(endPoint)) {
+		else if (roots.has(endPoint)) {
 			return true;
 		}
-		let stack = Array.from(otherDeps);
-		let visited = new Set<T>();
-		while (stack.length > 0) {
-			let top = stack.pop() as T;
-			visited.add(top);
-			if (top == endPoint)
-				return true;
-			let topDeps = this.dependencies.get(top);
-			if (topDeps == undefined)
+		let queue = new Queue<T>(startPoint);
+		let visited = new Set<T>([startPoint]);
+		while (queue.size() > 0) {
+			let top = queue.dequeue()!;
+			let ajds = this.dependencies.get(top);
+			if(ajds == undefined)
 				continue;
-			if (topDeps.has(endPoint))
+			else if(ajds.has(endPoint))
 				return true;
-			for (let topDep of topDeps) {
-				stack.push(topDep);
+			for(let adj of ajds){
+				if(visited.has(adj))
+					continue;
+				visited.add(adj);
+				queue.enqueue(adj);
 			}
 		}
 		return false;
