@@ -35,15 +35,15 @@ export function lrAutomataToGraph(stateSet: StateSet) {
 		nodes.push({
 			id: state.id,
 			label: `${state.toString()}`,
-			x: count % size * 250,
-			y: Math.floor(count / size) * 250
+			x: count % size * 400,
+			y: Math.floor(count / size) * 400
 		});
 
 		for (let [label, to] of state.mapping) {
 			edges.push({
 				from: state.id,
 				to: to.id,
-				label: isNonTerminal(label) ? label.name : label.toString()
+				label: isNonTerminal(label) ? label.name : (typeof label === "string" ? `"${label.replace(/"/g,"\\\"")}"` : label)
 			});
 		}
 		count++;
@@ -93,7 +93,7 @@ export function firstTableToDimArr(firstTable: FirstTable): string[][] {
 		row.push(k + "");
 		for (let token of tokens) {
 			if (v.has(token))
-				row.push(v.get(token)!.id+"");
+				row.push(v.get(token)!.id + "");
 			else
 				row.push("");
 		}

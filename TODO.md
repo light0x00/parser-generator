@@ -27,9 +27,9 @@ F -> ID <%= new Factor($children) %> ;
 
 @error <% console.error($ERROR) %>
 
-@ap left 1 '+'
-@ap left 1 '-'
-@ap left 2 '*','/'
+@assoc left E
+@assoc&prec left 1 '+' '-'
+@assoc&prec left 2 '*' '/'
 @assoc right '='
 @prec -1 '='
 ```
@@ -84,14 +84,15 @@ F -> ID <%= new Factor($children) %> ;
 ### 优先级&结合性
 
 ```
-@assoc <associate> <token1>,<token2>,...,<tokenN>
-@prec <priority> <token1>,<token2>,...,<tokenN>
-@assoc&prec <associate> <priority> <token1>,<token2>,...,<tokenN>
+@assoc <associate> <symbol1>,<symbol2>,...,<symbolN>
+@prec <priority> <symbol1>,<symbol2>,...,<symbolN>
+@assoc&prec <associate> <priority> <symbol1>,<symbol2>,...,<symbolN>
 ```
 
 - [语义] 默认结合性为左结合,默认优先级为-1
 - [语法] `@assoc` 单独指定结合方向,`@prec` 单独指定优先级 ,`@assoc&prec` 同时指定优先级结合性
 - [语义] 如果同一符号被指定多次 assoc、prec ,那么后面的覆盖前面
+- [语义] 对于一个产生式而言,其优先级、结合性默认与所属非终结符相同,如果产生式体中包含的符号(可以是非终结符或终结符)拥有更高的优先级,则该产生式的优先级结合性以该符号为准.
 
 
 ### 错误定位
@@ -103,3 +104,12 @@ Undecalared symbol at xx,xx :
 E -> E + T
          ^
 ```
+
+# 其他
+
+- 在代码生成、可视化时, 对于字符串类型,输入时加上 `"`, 如果字符串本身含`"` 则使用`\"`进行输出.
+
+- 结合性,每个非终结符,终结符,都可以右自己的优先级与结合性,结合性默认为右结合,优先级默认都为-1
+
+
+

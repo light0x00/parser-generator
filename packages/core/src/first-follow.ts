@@ -44,8 +44,8 @@ export class FirstCalculator {
                     - 如果First(leftMost)包含ε,leftMost指向后一个符号,继续推导的First(leftMost),重复同样的过程直到到产生式末尾.
                     - 当到产生式达末尾时,如果还有ε,则将ε加入First(S)
                 */
-				if (leftmost == target) { //issue 1.自递归
-					if (lmIdx == 0) //对于左递归文法 给出提示
+				if (leftmost === target) { //issue 1.自递归
+					if (lmIdx === 0) //对于左递归文法 给出提示
 						debug(`Found the left recursive production ${prod}`);
 					break;
 				}
@@ -68,7 +68,7 @@ export class FirstCalculator {
 				//包含ε
 				else {
 					//到达最后一个仍包含ε 加入ε
-					if (lmIdx == prod.body.length - 1)
+					if (lmIdx === prod.body.length - 1)
 						result.set(NIL, prod);
 				}
 			}

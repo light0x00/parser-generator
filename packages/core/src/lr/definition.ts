@@ -60,11 +60,11 @@ export class Item {
 		for (let i = 0; i < symbols.length; i++) {
 			if (this._dot == i)
 				str += "·";
-			str += symbols[i];
+			str += (typeof symbols[i] =="string"? `'${(symbols[i]as string).replace(/'/g,"\\'")}'` : symbols[i] ) +" ";
 		}
 		if (this._dot == symbols.length)
 			str += "·";
-		str +=" ❕" + Array.from(this.lookaheadSet).join(" ") ;
+		str +=" ❕" + Array.from(this.lookaheadSet).map((i)=>(typeof i==="string"? `'${i.replace(/'/g,"\\'")}'`:i )).join(" ") ;
 		return `${this.prod.head.name}->${str}`;
 	}
 	equals(other: Item) {

@@ -1,4 +1,4 @@
-import { NonTerminal, Production, TokenPro, NIL, IGrammar, AugmentedGrammar, SymbolWrapper, SSymbol, SymbolTrait, Grammar, EOF, ParsingTable, Shift, Accept, Goto, Reduce, SymbolTraits } from "@parser-generator/definition";
+import { NonTerminal, Production, TokenPro, NIL, IGrammar, AugmentedGrammar, SymbolWrapper, SymbolTrait, Grammar, EOF, ParsingTable, Shift, Accept, Goto, Reduce, SymbolTraits, SSymbol } from "@parser-generator/definition";
 import { assert } from "@light0x00/shim";
 // import { cloneDeep, groupBy ,Dictionary} from "lodash";
 import cloneDeep from "lodash/cloneDeep";
@@ -12,7 +12,9 @@ import { CommonAbstractRegexpLexer } from "@parser-generator/definition";
 
 export enum Tag {
 	BLANK = "BLANK", CRLF = "CRLF", EOF = "EOF", NIL = "NIL",
-	HEAD = "HEAD", SCRIPT = "SCRIPT", STRING = "STRING", NUMBER = "NUMBER", WORD = "WORD", SINGLE = "SINGLE",
+	HEAD = "HEAD", SCRIPT = "SCRIPT",
+	STRING = "STRING", STRING_SINGLE_QUOTES="STRING_SINGLE_QUOTES" , STRING_DOUBLE_QUOTES="STRING_DOUBLE_QUOTES",
+	NUMBER = "NUMBER", WORD = "WORD", SINGLE = "SINGLE" ,
 	ID = "ID", KEYWORD = "KEYWORD", ASSOC = "ASSOC"
 }
 
@@ -75,7 +77,7 @@ class Number extends Token {
 		return this.lexeme;
 	}
 }
-
+/("|')(?<value>(\\(\1)|[^\1])*)?(\1)/.exec(`'\\"\\'aa'`);
 export class GrammarLexer extends CommonAbstractRegexpLexer<Token, Tag>{
 
 	private lineNo = 1;
@@ -90,7 +92,10 @@ export class GrammarLexer extends CommonAbstractRegexpLexer<Token, Tag>{
 			{ regexp: /#(?<value>\w+)/y, type: Tag.HEAD },
 			{ regexp: /[A-Z_a-z]\w*/y, type: Tag.WORD },
 			{ regexp: /<%(?<value>(.|\s)+?)%>/y, type: Tag.SCRIPT },
-			{ regexp: /("|')(?<value>(\\"|\\'|[^"'])*)?(\1)/y, type: Tag.STRING },
+
+			{ regexp: /'(?<value>(\\(')|[^'])*)?'/y, type: Tag.STRING },
+			{ regexp: /"(?<value>(\\(")|[^"])*)?"/y, type: Tag.STRING },
+
 			{ regexp: /([1-9]\d*\.\d+)|(0\.\d+)/y, type: Tag.NUMBER },
 			{ regexp: /(0(?![0-9]))|([1-9]\d*(?!\.))/y, type: Tag.NUMBER },
 			{ regexp: /(.)/y, type: Tag.SINGLE }
@@ -139,7 +144,15 @@ export class GrammarLexer extends CommonAbstractRegexpLexer<Token, Tag>{
 				token = new Number(parseFloat(lexeme));
 				break;
 			case Tag.STRING:
-				token = new Word(Tag.STRING, match.groups!["value"]);
+				{
+					let lexeme;
+					if(match[0].startsWith("\"")){
+						lexeme = match.groups!["value"].replace(/\\"/g,"\"");
+					}else{
+						lexeme = match.groups!["value"].replace(/\\'/g,"'");
+					}
+					token = new Word(Tag.STRING, lexeme);
+				}
 				break;
 			case Tag.SINGLE:
 				token = new Word(Tag.SINGLE, lexeme);
@@ -185,17 +198,19 @@ abstract class ASTree {
 export class ProgramNode extends ASTree {
 	grammarNode: GrammarNode;
 	private blocks: ASTree[]
-	traits: SymbolTraits;
+	// traits: SymbolTraits;
+
+	traits: SymbolTraits = new Map<SSymbol, SymbolTrait>();
 
 	constructor(gNode: GrammarNode, paNode: PrecAssocNode | undefined, blocks: ASTree[]) {
 		super();
 		this.grammarNode = gNode;
 		this.blocks = blocks;
 
-		if (paNode == undefined)
-			this.traits = new Map<SSymbol, SymbolTrait>();
-		else
-			this.traits = paNode.traits;
+		// if (paNode == undefined)
+		// 	this.traits = new Map<SSymbol, SymbolTrait>();
+		// else
+		// 	this.traits = paNode.traits;
 	}
 	accpet(visitor: IVisitor): void {
 		for (let c of this.blocks) {
@@ -218,13 +233,11 @@ class ScriptNode extends ASTree {
 
 class PrecAssocNode extends ASTree {
 	children: PrecassocItemNode[]
-	traits: SymbolTraits = new Map<SSymbol, SymbolTrait>();
+
 	constructor(children: PrecassocItemNode[]) {
 		super();
 		this.children = children;
-		for (let c of this.children) {
-			this.traits.set(c.symbol.value as string, new SymbolTrait(c.prec, c.leftAssoc));
-		}
+
 	}
 
 	accpet(visitor: IVisitor): void {
@@ -237,11 +250,22 @@ class PrecassocItemNode extends ASTree {
 	symbol: Token
 	leftAssoc: boolean;
 	prec: number
-	constructor(tokens: Token[]) {
+	constructor(tokens: (Token|undefined)[]) {
 		super();
+		assert( tokens[0]!=undefined);
 		this.symbol = tokens[0];
-		this.leftAssoc = tokens[1].value == "left";
-		this.prec = tokens[2].value as number;
+		// this.leftAssoc = (tokens[1]?.value??"right") == "left";
+		// this.prec = (tokens[2]?.value??-1) as number;
+		console.log(tokens);
+		if(tokens[1]!=undefined)
+			this.leftAssoc = tokens[1].value=="left";
+		else
+			this.leftAssoc = false;
+
+		if(tokens[2]!=undefined)
+			this.prec = tokens[2].value as number;
+		else
+			this.prec = -1;
 	}
 	accpet(visitor: IVisitor): void {
 		throw new Error("Method not implemented.");
@@ -435,8 +459,8 @@ class NonTerminalNode extends ASTree {
 				break;
 			}
 		}
-		if (defaultPostAction == undefined)
-			console.warn(`The nonterminal "${this.varName}" doesn't have post-action,it's required for parser!`);
+		// if (defaultPostAction == undefined)
+		// console.warn(`The nonterminal "${this.varName}" doesn't have post-action,it's required for parser!`);
 		//没有归约动作的产生式 优先向后寻找 如果后方没有 则使用默认的
 		for (let i = 0; i < prods.length; i++) {
 			if (prods[i].postAction == undefined) {
@@ -564,12 +588,19 @@ export function parse(lexer: GrammarLexer): ProgramNode {
 		let items = new Array<PrecassocItemNode>();
 		while (isSymbol(lexer.peek())) {
 			let sym = lexer.next();
-			if (lexer.peek().tag != Tag.ASSOC)
-				throw new Error(`expect left or right at (${pos(lexer.peek())})`);
-			let assoc = lexer.next();
-			if (lexer.peek().tag != Tag.NUMBER)
-				throw new Error(`expect a number at (${pos(lexer.peek())})`);
-			let prec = lexer.next();
+			let assoc,prec;
+			if (lexer.peek().tag == Tag.ASSOC){
+				assoc = lexer.next();
+				// throw new Error(`expect left or right at (${pos(lexer.peek())})`);
+			}
+			if (lexer.peek().tag == Tag.NUMBER){
+				prec = lexer.next();
+				// throw new Error(`expect a number at (${pos(lexer.peek())})`);
+			}
+			if(assoc===undefined && prec === undefined){
+				throw new Error(`expect a left/right or number at (${pos(lexer.peek())})`);
+			}
+
 			items.push(new PrecassocItemNode([sym, assoc, prec]));
 		}
 		if (items.length > 0)
@@ -692,10 +723,12 @@ export type EvalContext = {
 
 export class EvalVisitor implements IVisitor {
 
-	private traits: SymbolTraits | undefined;
+	private traits: SymbolTraits = new Map<SSymbol, SymbolTrait>();
 	private nts: NonTerminal[] = [];
 	private startSym!: NonTerminal;
 	private prods: Production[] = []
+
+	private env! : Env
 
 	private context: EvalContext;
 	constructor(context: EvalContext) {
@@ -723,6 +756,7 @@ export class EvalVisitor implements IVisitor {
 	visitGrammarNode(node: GrammarNode): void {
 		this.startSym = node.startSym;
 		this.nts = node.nts;
+		this.env = node.env;
 	}
 	visitTokenProNode(node: TokenProNode): void {
 		//
@@ -753,7 +787,15 @@ export class EvalVisitor implements IVisitor {
 		this.prods.push(prod);
 	}
 	visitPrecAssocNode(node: PrecAssocNode): void {
-		this.traits = node.traits;
+
+		for (let {symbol,prec,leftAssoc} of node.children) {
+			if(symbol.tag==Tag.STRING){
+				this.traits.set(symbol.value as string, new SymbolTrait(prec, leftAssoc));
+			}else if(symbol.tag == Tag.ID){
+				this.traits.set(this.env.getSym(symbol.value as string),new SymbolTrait(prec,leftAssoc));
+			}
+
+		}
 	}
 }
 
@@ -765,20 +807,20 @@ export type CodegenContext = {
 }
 
 const DEFINITION_PACKAGE = "@parser-generator/definition";
-const LL_PARSER_PACKAGE = "@parser-generator/core";
-const LR_PARSER_PACKAGE = "@parser-generator/core";
+// const LL_PARSER_PACKAGE = "@parser-generator/core";
+// const LR_PARSER_PACKAGE = "@parser-generator/core";
 const LR_PARSING_TABLE_VAR = "table";
 const FIRST_SET_VAR = "first";
 const FOLLOW_SET_VAR = "follow";
 const SYMBOL_TRAITS_VAR = "traits";
-
+//ILexer, IToken, ASTElement
 export class TSCodegenVisitor implements IVisitor {
 
 	private _code: string = "";
 	private context: CodegenContext
 	constructor(context: CodegenContext) {
 		this.context = context;
-		this.emit(`import { ${NonTerminal.name}, ${TokenPro.name}, ${Production.name}, ${SymbolWrapper.name}, ${SymbolTrait.name}, NIL, Terminal, EOF`);
+		this.emit(`import { ${NonTerminal.name}, ${TokenPro.name}, ${Production.name}, ${SymbolWrapper.name}, SSymbol ,${SymbolTrait.name}, NIL, Terminal, EOF `);
 		if (context.parser == "LL") {
 			this.emit("}");
 		} else {
@@ -797,17 +839,19 @@ export class TSCodegenVisitor implements IVisitor {
 		return this._code;
 	}
 	visitProgramNode(node: ProgramNode): void {
-		let env = node.grammarNode.env;
+		// let env = node.grammarNode.env;
 
-		let { firstTable, followTable } = this.context;
+		// let { firstTable, followTable } = this.context;
 		//parser
 		if (this.context.parser == "LL") {
-			assert(firstTable != undefined && followTable != undefined);
-			this.emitln(`import {${LLParser.name}} from "${LL_PARSER_PACKAGE}";`);
-			this.emitln(`export let parser = new ${LLParser.name}(${env.getSymVarName(node.grammarNode.startSym)},${FIRST_SET_VAR},${FOLLOW_SET_VAR});`);
+			// assert(firstTable != undefined && followTable != undefined);
+			// this.emitln(`import {${LLParser.name}} from "${LL_PARSER_PACKAGE}";`);
+			// this.emitln(`export let parser = new ${LLParser.name}(${env.getSymVarName(node.grammarNode.startSym)},${FIRST_SET_VAR},${FOLLOW_SET_VAR});`);
+			this.emitln(`export { ${FIRST_SET_VAR},${FOLLOW_SET_VAR} }`);
 		} else {
-			this.emitln(`import {${LRParser.name}} from "${LR_PARSER_PACKAGE}";`);
-			this.emitln(`export let parser = new ${LRParser.name}(${LR_PARSING_TABLE_VAR});`);
+			// this.emitln(`import {${LRParser.name}} from "${LR_PARSER_PACKAGE}";`);
+			// this.emitln(`export let parser = new ${LRParser.name}(${LR_PARSING_TABLE_VAR});`);
+			this.emitln(`export default ${LR_PARSING_TABLE_VAR};`);
 		}
 	}
 	visitScriptNode(node: ScriptNode): void {
@@ -917,13 +961,13 @@ export class TSCodegenVisitor implements IVisitor {
 		this.emit("\n");
 	}
 	visitPrecAssocNode(node: PrecAssocNode): void {
-		this.emit(`let ${SYMBOL_TRAITS_VAR} = new Map<string, ${SymbolTrait.name}>();`);
-		for (let item of node.children) {
-			this.emit("\n");
-			let symStr = item.symbol.tag == Tag.STRING ? `"${item.symbol.value}"` : item.symbol.value;//区别字符串字面量与变量名
-			this.emit(`${SYMBOL_TRAITS_VAR}.set(${symStr},new ${SymbolTrait.name}(${item.prec},${item.leftAssoc ? "true" : "false"}));`);
-		}
-		this.emit("\n");
+		// this.emit(`let ${SYMBOL_TRAITS_VAR} = new Map<SSymbol, ${SymbolTrait.name}>();`);
+		// for (let item of node.children) {
+		// 	this.emit("\n");
+		// 	let symStr = item.symbol.tag == Tag.STRING ? `"${item.symbol.value}"` : item.symbol.value;//区别字符串字面量与变量名
+		// 	this.emit(`${SYMBOL_TRAITS_VAR}.set(${symStr},new ${SymbolTrait.name}(${item.prec},${item.leftAssoc ? "true" : "false"}));`);
+		// }
+		// this.emit("\n");
 	}
 }
 

@@ -3,7 +3,7 @@ import { Terminal, SSymbol, NonTerminal, NIL, Production, AugmentedGrammar, EOF 
 import { AutomataTools, ItemSet, Item, State, StateSet } from "./definition";
 
 import _debug from "debug";
-import { FirstCalculator, FirstTable } from "../first-follow";
+import { FirstCalculator } from "../first-follow";
 import { getAutomata } from "./automata";
 import { getParsingTable } from "./parsing-table";
 let debug = _debug("PG:LR1");
@@ -22,7 +22,7 @@ export class LR1AutomataTools implements AutomataTools {
 		for (let item of I) {
 			if (!item.hasNext())
 				continue;
-			if (item.nextSymbol() == inputSymbol) {
+			if (item.nextSymbol() === inputSymbol) {
 				nextItemSet.push(item.nextItem());
 			}
 		}
@@ -39,7 +39,7 @@ export class LR1AutomataTools implements AutomataTools {
 			let expandSym = item.nextSymbol();
 			if (!(expandSym instanceof NonTerminal)) //issue 1.2
 				continue;
-			if (item.prod.body[0] == item.prod.head && item.dotPos == 0) { //issue 1.4
+			if (item.prod.body[0] === item.prod.head && item.dotPos == 0) { //issue 1.4
 				debug(`Stop expanding left recursion production ${expandSym}`);
 				continue;
 			}

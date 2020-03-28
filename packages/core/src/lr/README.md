@@ -372,7 +372,7 @@ E->E·*E,{+,*,EOF}
 
 **产生式的优先级与结合性**
 
-一个产生式的prec、assoc由产生式中的符号决定. 上例中,`E->E+E`的prec、assoc继承`+`,即: `prec=1,assoc=left`.
+一个产生式的prec、assoc由产生式中的符号(可以为非终结符)决定. 上例中,`E->E+E`的prec、assoc继承`+`,即: `prec=1,assoc=left`.
 如果产生式中存在多个符号具有prec、assoc,则以prec最大的符号为准,例如 `E->E+E*`中,`*`的优先级高于`+`,因此该产生式的prec、assoc以`*`为准,即`*: prec=2,assoc=left`.
 
 **项的优先级**

@@ -235,8 +235,13 @@ export class Grammar implements IGrammar {
 		this.traits = traits;
 		//处理产生式的优先级与结合性
 		for (let p of prods) {
-			let prec = -1;
-			let leftAssoc = false;
+			if(traits.has(p.head)){
+				let trait = traits.get(p.head)!;
+				p.prec = trait.prec;
+				p.leftAssoc = trait.leftAssoc;
+			}
+			let prec =p.prec;
+			let leftAssoc = p.leftAssoc;
 			for (let s of p.body) {
 				if (traits.has(s)) {
 					let trait = traits.get(s)!;

@@ -41,7 +41,8 @@ export class LRParser {
 					stateStack.pop();
 					eles.unshift(astStack.pop()!);  //issue AST元素的顺序问题
 				}
-				astStack.push(op.prod.postAction(eles, astStack));  //issue ASTNode的元素的顺序问题
+				if(op.prod.postAction)
+					astStack.push(op.prod.postAction(eles, astStack));  //issue ASTNode的元素的顺序问题
 				debug(`reduce ${op.prod}, make ast: ${astStack.peek()}`);
 				lookahead = op.prod.head;
 			}
