@@ -1,13 +1,14 @@
 {
 	"name": "@parser-generator/cli",
-	"version": "0.1.0-alpha.1",
+	"version": "0.1.0-alpha.2",
 	"devDependencies": {
 		"@types/getopts": "^2.1.0"
 	},
 	"dependencies": {
 		"@light0x00/shim": "^0.0.2",
-		"@parser-generator/core": "^0.1.0-alpha.0",
-		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.1",
+		"@parser-generator/core": "^0.1.0-alpha.2",
+		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.2",
+		"@types/html-webpack-plugin": "^3.2.1",
 		"getopts": "^2.2.5",
 		"html-webpack-plugin": "^3.2.0",
 		"keycharm": "^0.2.0",
@@ -15,8 +16,7 @@
 		"vis-data": "^6.2.1",
 		"vis-network": "^6.5.0",
 		"vis-util": "^1.1.8",
-		"webpack": "^4.41.5",
-		"@types/html-webpack-plugin": "^3.2.1"
+		"webpack": "^4.41.5"
 	},
 	"bin": {
 		"pgen": "lib/index.js"
