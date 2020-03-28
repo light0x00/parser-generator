@@ -11,9 +11,12 @@
 		"release": "lerna publish  --conventional-commits",
 		"release:pages": "gp -a packages/web/dist -m 'release: auto deploy'"
 	},
-	"workspaces": [
-		"packages/*"
-	],
+	"workspaces": {
+		"packages": ["packages/*"],
+		"nohoist": [
+			"**/web/**"
+		]
+	  },
 	"husky": {
 		"hooks": {
 			"pre-commit": [

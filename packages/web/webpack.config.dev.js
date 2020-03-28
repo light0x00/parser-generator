@@ -35,29 +35,5 @@ export default merge(baseConfig, {
 	},
 	plugins: [
 		new webpack.HotModuleReplacementPlugin(),
-	],
-	// optimization: {
-	// 	sideEffects: true,
-	// 	minimize: true,
-	// 	minimizer: [
-	// 		new TerserPlugin({
-	// 			// exclude: "pgen",
-	// 			chunkFilter:(chunk)=>{
-	// 				if(chunk.name == "tools"){
-	// 					return false;
-	// 				}
-	// 				return true;
-	// 			},
-	// 			terserOptions: {
-	// 				compress: {
-	// 					drop_console: false,
-	// 				},
-	// 				output: {
-	// 					comments: false,
-	// 				},
-	// 			},
-	// 		}),
-	// 		new OptimizeCSSAssetsPlugin({})
-	// 	],
-	// },
+	]
 });

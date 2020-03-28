@@ -49,7 +49,7 @@ const OPTIONS = {
 		shape: "box",
 		margin: 10,
 		widthConstraint: {
-			maximum: 200
+			maximum: 500
 		},
 		color: {
 			background:"#d3dce6",

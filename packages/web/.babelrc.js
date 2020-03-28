@@ -11,14 +11,15 @@ module.exports = {
 		[
 			"@babel/env",
 			{
-				"targets": "last 1 versions, not dead",
+				"targets": { "esmodules":true },
 				"modules": false,
-				"useBuiltIns": "usage",
-				"corejs": 3
+				"exclude":["transform-.*"]
 			}
 		]
 	],
 	"plugins": [
+		"@babel/plugin-proposal-optional-chaining",
+		"@babel/plugin-transform-runtime",
 		[
 			/* https://github.com/ant-design/babel-plugin-import */
 			"import",
@@ -28,7 +29,8 @@ module.exports = {
 				"styleLibraryDirectory": EXISTS_CUSTOM_STYLE ? undefined : "lib/theme-chalk", /* css库的基路径 */
 				"customStyleName": EXISTS_CUSTOM_STYLE ? ((compName) =>path.resolve(STYLE_PATH, compName)) : undefined /* css的路径 */
 				// "customName": (compName)=>{console.log(compName);return `${STYLE_PATH}/${compName}`} /* js库的路径 */
-			}
-		]
+			},
+		],
+
 	]
 }

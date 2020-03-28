@@ -53,11 +53,11 @@ export default {
 				loader: "vue-loader"
 			},
 			{
-				test: /\.(js)|(ts)$/,
+				test: /\.(m?js|ts)$/,
 				loader: "babel-loader",
-				exclude: /node_modules/,
+				// exclude: /node_modules/,
 				options: {
-					// cacheDirectory: true
+					cacheDirectory: true,
 				},
 			},
 			{

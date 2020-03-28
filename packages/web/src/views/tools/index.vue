@@ -105,10 +105,11 @@ S->E;
 E->E '+' E | E '-' E |E'*'E |E'/'E | '(' E ')' | digit  <% (e)=>new Expr(e)  %>;
 
 #SYMBOL_ASSOC_PREC
-'+' left 0
-'-' left 0
-'*' left 1
-'/' left 1`;
+E left
+'+' 0
+'-' 0
+'*' 1
+'/' 1`;
 
 export default Vue.extend({
 	data: function() {
