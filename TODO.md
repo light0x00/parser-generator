@@ -57,12 +57,20 @@ F -> ID <%= new Factor($children) %> ;
 
 ### 文法
 
+文法的组成
+
 ```
-@grammar
-<SymbolX> -> <Symbol1> ... <SymbolN> | <Symbol1> ...<SymbolN> <NodeConstructor>;
-<SymbolX> -> <Symbol1> ... <SymbolN> <NodeConstructor> | <Symbol1> ...<SymbolN> <NodeConstructor>;
-不推荐的写法:
-<SymbolX> -> <Symbol1> ... <SymbolN> <NodeConstructor>| <Symbol1> ...<SymbolN> ;
+Grammar -> NonTerminalDefinitions
+NonTerminalDefinitions -> NonTerminalDefinitions ';'  NonTerminalDefinition
+```
+
+产生式的组成
+
+```
+NonTerminalDefinition -> NonTerminal '->' Productions
+Productions -> Production | Productions '|' Production
+Production -> Symbols | Symbols NodeConstructor | 𝝴
+Symbols -> Symbol | Symbols Symbol
 ```
 
 - [语法] 节点构造器可以有两种形式
@@ -93,6 +101,33 @@ F -> ID <%= new Factor($children) %> ;
 - [语法] `@assoc` 单独指定结合方向,`@prec` 单独指定优先级 ,`@assoc&prec` 同时指定优先级结合性
 - [语义] 如果同一符号被指定多次 assoc、prec ,那么后面的覆盖前面
 - [语义] 对于一个产生式而言,其优先级、结合性默认与所属非终结符相同,如果产生式体中包含的符号(可以是非终结符或终结符)拥有更高的优先级,则该产生式的优先级结合性以该符号为准.
+
+### 注释
+
+支持单行注`//` , 及多行注释 `/* */`
+
+### 空产生式
+
+表示空有两种方式
+
+(1) 可通过`𝝴`
+
+```
+A-> aa | bb | 𝝴 ;
+```
+
+(2) 产生式体 以 `|`结束或结尾 表示产生式式可空
+
+```
+// 以 `|` 结尾
+A -> aa | bb | ;
+
+// 以 `|` 开头
+A -> | aa | bb ;
+
+//以  `|` 开头且结尾 (支持但不推荐)
+A -> | aa | bb |;
+```
 
 
 ### 错误定位
