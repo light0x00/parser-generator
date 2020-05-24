@@ -1,6 +1,6 @@
 {
 	"name": "@parser-generator/grammar-interpreter",
-	"version": "0.1.0-alpha.2",
+	"version": "0.1.0-alpha.3",
 	"dependencies": {
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/core": "^0.1.0-alpha.2",

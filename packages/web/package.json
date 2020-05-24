@@ -1,6 +1,6 @@
 {
 	"name": "@parser-generator/web",
-	"version": "0.1.0-alpha.2",
+	"version": "0.1.0-alpha.3",
 	"scripts": {
 		"start": "yarn webpack-dev-server --config-register esm --config webpack.config.dev.js --progress",
 		"build:dev": "node -r esm node_modules/.bin/webpack --config webpack.config.dev.js --progress",
@@ -10,7 +10,7 @@
 		"@babel/runtime": "^7.7.7",
 		"@light0x00/shim": "^0.0.2",
 		"@parser-generator/core": "^0.1.0-alpha.2",
-		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.2",
+		"@parser-generator/grammar-interpreter": "^0.1.0-alpha.3",
 		"core-js": "^3.6.2",
 		"element-ui": "^2.13.0",
 		"file-saver": "^2.0.2",
