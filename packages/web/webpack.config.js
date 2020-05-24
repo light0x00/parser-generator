@@ -27,11 +27,11 @@ export default {
 		chunkFilename: ASSETS_PATHS.jsChunk
 	},
 	resolve: {
-		extensions: [".vue", ".js", ".ts",".css"],
+		extensions: [".vue", ".js", ".ts", ".css"],
 		alias: {
 			"vue$": "vue/dist/vue.runtime.esm",
 			"~": resolve(ROOT, "src"),
-			"lodash":"lodash-es"
+			"lodash": "lodash-es"
 		},
 
 	},
@@ -59,6 +59,10 @@ export default {
 				options: {
 					cacheDirectory: true,
 				},
+			},
+			{
+				test: /\.worker\.js$/,
+				use: { loader: "worker-loader" }
 			},
 			{
 				test: /\.(woff|woff2|eot|ttf|otf)$/,

@@ -10,6 +10,7 @@ export default merge(baseConfig, {
 	stats:"normal",
 	output: {
 		publicPath: "/",
+		globalObject: "this"
 	},
 	devServer: {
 		contentBase: [resolve("public/")],

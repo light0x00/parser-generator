@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-loading="loading">
     <!-- 输入-->
     <el-input
       v-model="grammar"
@@ -11,7 +11,13 @@
       show-word-limit
     />
     <el-alert v-show="errorMsg!=''" :title="errorMsg" type="error" show-icon :closable="false" />
-    <el-alert v-show="successMsg!=''" :title="successMsg" type="success" show-icon :closable="false" />
+    <el-alert
+      v-show="successMsg!=''"
+      :title="successMsg"
+      type="success"
+      show-icon
+      :closable="false"
+    />
 
     <el-row type="flex">
       <el-select v-model="options.parser" placeholder="parser type">
@@ -64,8 +70,15 @@
         <!-- LR 自动机 -->
         <collapse>
           <template slot="head">LR Automata</template>
-          <div slot="body" style="width:calc(100% - 2px);height:600px;overflow: auto;  border:1px solid #e1e4e8;resize: vertical ">
-            <network ref="automata" :value="output.lrAutomata" style="height:900px; background-color:white;width: calc(100% - 20px) ;" />
+          <div
+            slot="body"
+            style="width:calc(100% - 2px);height:600px;overflow: auto;  border:1px solid #e1e4e8;resize: vertical "
+          >
+            <network
+              ref="automata"
+              :value="output.lrAutomata"
+              style="height:900px; background-color:white;width: calc(100% - 20px) ;"
+            />
           </div>
         </collapse>
 
@@ -84,7 +97,6 @@
           <markdown :content="mdContent" />
         </template>
       </collapse>
-
     </template>
   </div>
 </template>
@@ -111,27 +123,31 @@ E left
 '*' 1
 '/' 1`;
 
+const INITIAL_OUTPUT = {
+	code: "",
+	productions: [],
+	firstTable: [],
+	followTable: [],
+	lrTable: [],
+	lrAutomata: {
+		nodes: [],
+		edges: []
+	}
+};
+
 export default Vue.extend({
-	data: function() {
+	name:"MAIN",
+	data() {
 		return {
 			grammar: DEFAULT_GRAMMAR,
-			output: {
-				code: "",
-				productions: [],
-				firstTable: [],
-				followTable: [],
-				lrTable: [],
-				lrAutomata: {
-					nodes: [],
-					edges: []
-				}
-			},
+			output: INITIAL_OUTPUT,
 			options: {
 				parser: "LR1",
 				lang: "TS"
 			},
 			errorMsg0: "",
-			successMsg0: ""
+			successMsg0: "",
+			loading:false
 		};
 	},
 	computed: {
@@ -165,41 +181,28 @@ export default Vue.extend({
 	},
 	methods: {
 		async gen() {
-			try {
-				let { genParser,adapter } = await import(/* webpackChunkName: 'pgen' */"@parser-generator/grammar-interpreter");
-				let r = genParser(this.grammar, this.options);
-				console.log(r);
+			let myWorker = new ((await import("./gen.worker")).default)();
+			console.log("!!!",myWorker);
+			const thisRef = this;
 
-				let {
-					code,
-					grammar,
-					lrTable,
-					lrAutomata,
-					firstTable,
-					followTable
-				} = r;
-				this.output.code = code;
-				this.output.productions = grammar.productions();
-				if (lrTable != undefined)
-					this.output.lrTable = adapter.lrTableToDimArr(lrTable);
-				if (firstTable != undefined)
-					this.output.firstTable = adapter.firstTableToDimArr(
-						firstTable
-					);
-				if (followTable != undefined)
-					this.output.followTable = adapter.followTableToDimArr(
-						followTable
-					);
-				if (lrAutomata != undefined)
-					this.output.lrAutomata = adapter.lrAutomataToGraph(
-						lrAutomata
-					);
-				this.successMsg = "success!";
-			} catch (e) {
-				console.error(e);
-				this.errorMsg = e.message;
+			myWorker.onmessage = function (event) {
 
-			}
+				if(event.data.hasError){
+					thisRef.errorMsg = event.data.error.message;
+					thisRef.output = INITIAL_OUTPUT;
+				}else{
+					console.log("!!!",event.data.result);
+					thisRef.output = event.data.result;
+					thisRef.successMsg = "success!";
+				}
+
+				Promise.resolve().then(()=>{
+					thisRef.loading=false;
+				});
+			};
+
+			this.loading=true;
+			myWorker.postMessage(  {grammar: this.grammar, options:this.options });
 		},
 		downloadSourceCode() {
 			let blob = new Blob([this.output.code], {
