@@ -256,7 +256,6 @@ class PrecassocItemNode extends ASTree {
 		this.symbol = tokens[0];
 		// this.leftAssoc = (tokens[1]?.value??"right") == "left";
 		// this.prec = (tokens[2]?.value??-1) as number;
-		console.log(tokens);
 		if(tokens[1]!=undefined)
 			this.leftAssoc = tokens[1].value=="left";
 		else
