@@ -6,6 +6,8 @@
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg)](https://conventionalcommits.org)
 [![a](https://img.shields.io/npm/v/@parser-generator/cli)](https://www.npmjs.com/package/@parser-generator/cli)
 
+To generate and visualize the First-Set,Follow-Set,Automata,Parsing-Table: ➡️ [Try Online](https://light0x00.github.io/parser-generator/).
+
 It implements almost all the algorithms introuduced in the chapter relevant to grammar analysis in《Compilers Principles》, and combine them as a completed Parser Generator tools.
 
 The following repository can serve as a usage reference. They all used this tools to generate LR parsing table and LR analysis program.
@@ -13,6 +15,4 @@ The following repository can serve as a usage reference. They all used this tool
 - [JSON interpreter](https://github.com/light0x00/jsonx)
 - [template engine](https://github.com/light0x00/light-template)
 - [Expression Interpreter](https://github.com/light0x00/light-lang)
-
-To generate First-Set,Follow-Set,LR-Automata,LR-Parsing-Table: ➡️ [Try Online](https://light0x00.github.io/parser-generator/).
 
