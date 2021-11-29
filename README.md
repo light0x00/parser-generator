@@ -10,7 +10,10 @@ To generate First-Set,Follow-Set,LR-Automata,LR-Parsing-Table,➡️ [Try Online
 
 It implements almost all the algorithms introuduced in the chapter relevant to grammar analysis in《Compilers Principles》, and combine them as a completed Parser Generator tools.
 
-My other project used this library to implement a [JSON interpreter](https://github.com/light0x00/jsonx) and a [template engine](https://github.com/light0x00/light-template). that can serve as a usage reference.
+The following repository can serve as a usage reference. they all used this tools to generate LR Parsing Table and LR analysis program.
 
+- [JSON interpreter](https://github.com/light0x00/jsonx)
+- [Expression Interpreter](https://github.com/light0x00/light-lang)
+- [template engine](https://github.com/light0x00/light-template)
 
 
