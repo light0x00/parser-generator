@@ -15,7 +15,7 @@
 		"element-ui": "^2.13.0",
 		"file-saver": "^2.0.2",
 		"highlight.js": "^9.17.1",
-		"marked": "^0.8.0",
+		"marked": "^4.0.10",
 		"regenerator-runtime": "^0.13.3",
 		"vue": "^2.6.11",
 		"vue-router": "^3.1.3"
